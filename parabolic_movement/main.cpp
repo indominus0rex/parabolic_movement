@@ -3,32 +3,54 @@
 #include <SDL3_image/SDL_image.h>
 #include <string>
 #include <fmt/core.h>
+#include <vector>
 
 #include "window.h"
+#include "button.h"
 
-struct object {
-    int x;
-    int y;
-    float gravity;
+struct Particle {
+    float x;
+    float y;
+    float vx;
+    float vy;
     bool active;
+    SDL_Color color;
 
-    object(int x, int y) : x(x), y(y), gravity(9.8f), active(true) {}
+    Particle(int x, int y, int ux, int uy) : x(x), y(y), vx(ux), vy(uy), active(true) { color = {255, 255, 255}; }
+
+    void update(float deltaTime) {
+        if (!active) return;
+
+        //apply gravity
+        const float gravity = 9.8f * 100.0f;
+        vy += gravity * deltaTime;
+
+        //change position
+        x += vx * deltaTime;
+        y += vy * deltaTime;
+    }
+
+    void draw(SDL_Renderer* renderer) {
+        if (!active) return;
+
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        SDL_FRect rect = { x, y, 5.0f, 5.0f };
+        SDL_RenderFillRect(renderer, &rect);
+    }
 };
 
 int main(int argc, char* argv[]) {
 
-    int windowW = 1280;
-    int windowH = 960;
-    int logW = 640;
-    int logH = 360;
-    
     SDL_Init(SDL_INIT_VIDEO);
-    Window* window = new Window("Title", windowW, windowH, SDL_WINDOW_RESIZABLE);
+    Window* window = new Window("Title", 1280, 960, 640, 360, SDL_WINDOW_RESIZABLE);
     
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
+
+    std::vector<Particle> particles;
     
     while (running) {
+    
         float currentTime = SDL_GetTicks() / 1000.0f;
         float deltaTime = currentTime - prevTime;
         prevTime = currentTime;
@@ -42,7 +64,15 @@ int main(int argc, char* argv[]) {
                 }
 
                 case SDL_EVENT_WINDOW_RESIZED: {
+                    int tempW, tempH;
+                    SDL_GetWindowSize(window->getWindow(), &tempW, &tempH);
+                    window->setSize(tempW, tempH);
+                    break;
+                }
 
+                case SDL_EVENT_WINDOW_ENTER_FULLSCREEN || SDL_EVENT_WINDOW_LEAVE_FULLSCREEN: {
+                    window->toggleFullscreen();
+                    break;
                 }
             }
         }
@@ -52,8 +82,7 @@ int main(int argc, char* argv[]) {
 
         //display time elapse
         SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
-
-        
+    
         std::string debugText = fmt::format("Current Time = {:.3f}s", currentTime);
         SDL_RenderDebugText(window->getRenderer(), 10, 10, debugText.c_str());
 
