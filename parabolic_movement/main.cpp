@@ -5,40 +5,11 @@
 #include <fmt/core.h>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "window.h"
 #include "button.h"
-
-struct Particle {
-    float x;
-    float y;
-    float vx;
-    float vy;
-    bool active;
-    SDL_Color color;
-
-    Particle(int x, int y, int ux, int uy) : x(x), y(y), vx(ux), vy(uy), active(true) { color = {255, 255, 255}; }
-
-    void update(float deltaTime) {
-        if (!active) return;
-
-        //apply gravity
-        const float gravity = 9.8f * 100.0f;
-        vy += gravity * deltaTime;
-
-        //change position
-        x += vx * deltaTime;
-        y += vy * deltaTime;
-    }
-
-    void draw(SDL_Renderer* renderer) {
-        if (!active) return;
-
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        SDL_FRect rect = { x, y, 5.0f, 5.0f };
-        SDL_RenderFillRect(renderer, &rect);
-    }
-};
+#include "particle.h"
 
 int main(int argc, char* argv[]) {
 
@@ -91,7 +62,7 @@ int main(int argc, char* argv[]) {
 
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     if (spawnButton.isHover) 
-                        particles.push_back(Particle(10, window->logHeight() - 100, 300, -800));
+                        particles.push_back(Particle(10, window->logHeight() - 100, 300, -800, {255, 255, 255, 255}));
         
                     break;
                 }
@@ -106,9 +77,15 @@ int main(int argc, char* argv[]) {
         spawnButton.draw(window->getRenderer());
         
         //update particles
-        for (auto& particle : particles) {
-            particle.update(deltaTime);
-            particle.draw(window->getRenderer());
+        auto particle = particles.begin();
+        while (particle != particles.end()) {
+            particle->update(window, deltaTime);
+            particle->draw(window->getRenderer());
+
+            if (!particle->isActive())
+                particle = particles.erase(particle);
+            else
+                ++particle;
         }
 
         //display time elapse
