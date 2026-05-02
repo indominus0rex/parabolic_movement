@@ -3,4 +3,3 @@ build/
 *.out
 .vscode/
 .env
-local_config.h
