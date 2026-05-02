@@ -1,3 +1,5 @@
+set(SDL3_DIR "C:/SDKs/SDL3-3.4.4/x86_64-w64-mingw32/lib/cmake/SDL3")
+
 find_package(SDL3 REQUIRED)
 
 add_executable(${PROJECT_NAME} main.cpp)
