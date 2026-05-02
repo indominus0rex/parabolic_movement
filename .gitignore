@@ -1,0 +1,6 @@
+build/
+*.exe
+*.out
+.vscode/
+.env
+local_config.h
