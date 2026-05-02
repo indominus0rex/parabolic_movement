@@ -4,6 +4,7 @@
 #include <string>
 #include <fmt/core.h>
 #include <vector>
+#include <iostream>
 
 #include "window.h"
 #include "button.h"
@@ -42,8 +43,10 @@ struct Particle {
 int main(int argc, char* argv[]) {
 
     SDL_Init(SDL_INIT_VIDEO);
-    Window* window = new Window("Title", 1280, 960, 640, 360, SDL_WINDOW_RESIZABLE);
-    
+    Window* window = new Window("Title", 1280, 960, 640, 480, SDL_WINDOW_RESIZABLE);
+
+    Button spawnButton(window->logWidth() - 80, window->logHeight() - 30, 50, 20, {0, 102, 204, 255});
+
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
 
@@ -56,6 +59,7 @@ int main(int argc, char* argv[]) {
         prevTime = currentTime;
         
         SDL_Event event;
+
         while (SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_EVENT_QUIT: {
@@ -74,19 +78,44 @@ int main(int argc, char* argv[]) {
                     window->toggleFullscreen();
                     break;
                 }
+
+                case SDL_EVENT_MOUSE_MOTION: {
+                    SDL_ConvertEventToRenderCoordinates(window->getRenderer(), &event);
+
+                    float mouseX = event.button.x;
+                    float mouseY = event.button.y;
+                    spawnButton.update(mouseX, mouseY);
+                    
+                    break;
+                }
+
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    if (spawnButton.isHover) 
+                        particles.push_back(Particle(10, window->logHeight() - 100, 300, -800));
+        
+                    break;
+                }
             }
         }
+
         
         //cleanup previous frame
         window->cleanup(20, 10, 30);
+        
+        //display particle spawn button
+        spawnButton.draw(window->getRenderer());
+        
+        //update particles
+        for (auto& particle : particles) {
+            particle.update(deltaTime);
+            particle.draw(window->getRenderer());
+        }
 
         //display time elapse
         SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
+        SDL_RenderDebugText(window->getRenderer(), 10, 10, fmt::format("Current Time = {:.3f}s", currentTime).c_str());
     
-        std::string debugText = fmt::format("Current Time = {:.3f}s", currentTime);
-        SDL_RenderDebugText(window->getRenderer(), 10, 10, debugText.c_str());
-
-
+        
         //update frame
         window->updateFrame();
     }

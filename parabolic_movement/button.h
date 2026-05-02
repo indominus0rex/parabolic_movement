@@ -26,5 +26,16 @@ public:
             SDL_SetRenderDrawColor(renderer, baseColor.r, baseColor.g, baseColor.b, baseColor.a);
 
         SDL_RenderFillRect(renderer, &rect);
+        
+        //draw text
+        std::string spawnText = "SPAWN";
+        float textWidth = (float) spawnText.length() * 8.0f;
+        float textHeight = 8.0f;
+
+        float textX = rect.x + (rect.w - textWidth) / 2;
+        float textY = rect.y + (rect.h - textHeight) / 2;
+
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderDebugText(renderer, textX, textY, "SPAWN");
     }
 };
