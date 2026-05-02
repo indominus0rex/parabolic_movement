@@ -2,6 +2,10 @@ build/
 *.exe
 *.out
 .vscode/
+<<<<<<< HEAD
 .env
 CMakeLists.txt
 local_config.h
+=======
+.env
+>>>>>>> 1b40e875d09ca9c403dc10c2c7efad5ace671ed8
