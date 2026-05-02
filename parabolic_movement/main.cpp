@@ -4,6 +4,17 @@
 #include <string>
 #include <fmt/core.h>
 
+#include "window.h"
+
+struct object {
+    int x;
+    int y;
+    float gravity;
+    bool active;
+
+    object(int x, int y) : x(x), y(y), gravity(9.8f), active(true) {}
+};
+
 int main(int argc, char* argv[]) {
 
     int windowW = 1280;
@@ -11,21 +22,18 @@ int main(int argc, char* argv[]) {
     int logW = 640;
     int logH = 360;
     
-    SDL_Window* mainWindow;
-    mainWindow = SDL_CreateWindow("Title", windowW, windowH, SDL_WINDOW_RESIZABLE);
-    
-    SDL_Renderer* mainRenderer;
-    mainRenderer = SDL_CreateRenderer(mainWindow, nullptr);
-    SDL_SetRenderLogicalPresentation(mainRenderer, logW, logH, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-
     SDL_Init(SDL_INIT_VIDEO);
-
+    Window* window = new Window("Title", windowW, windowH, SDL_WINDOW_RESIZABLE);
+    
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
-
+    
     while (running) {
-        SDL_Event event;
+        float currentTime = SDL_GetTicks() / 1000.0f;
+        float deltaTime = currentTime - prevTime;
+        prevTime = currentTime;
         
+        SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_EVENT_QUIT: {
@@ -39,26 +47,23 @@ int main(int argc, char* argv[]) {
             }
         }
         
-        //set background color
-        SDL_SetRenderDrawColor(mainRenderer, 20, 10, 30, 255);
-        SDL_RenderClear(mainRenderer);
-        
-        //display time elapse
-        SDL_SetRenderDrawColor(mainRenderer, 255, 255, 255, 255);
+        //cleanup previous frame
+        window->cleanup(20, 10, 30);
 
-        float currentTime = SDL_GetTicks() / 1000.0f;
-        float deltaTime = (currentTime - prevTime)/ 1000.0f;
+        //display time elapse
+        SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
+
         
         std::string debugText = fmt::format("Current Time = {:.3f}s", currentTime);
-        SDL_RenderDebugText(mainRenderer, 10, 10, debugText.c_str());
+        SDL_RenderDebugText(window->getRenderer(), 10, 10, debugText.c_str());
 
 
-        //load renderer
-        SDL_RenderPresent(mainRenderer);
+        //update frame
+        window->updateFrame();
     }
 
-    SDL_DestroyWindow(mainWindow);
-
+    delete window;
+    
     SDL_Quit();
 
     return 0;
