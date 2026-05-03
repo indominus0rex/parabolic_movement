@@ -1,5 +1,7 @@
 #include "particle.hpp"
+#include "window.hpp"
 
+Particle::Particle() {}
 Particle::Particle(float x, float y, float ux, float uy, SDL_Color color) : x(x), y(y), vx(ux), vy(uy), color(color), active(true) {}
 
 void Particle::update(Window* window, float deltaTime) {
@@ -24,4 +26,21 @@ void Particle::draw(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_FRect rect = { x, y, 5.0f, 5.0f };
     SDL_RenderFillRect(renderer, &rect);
+}
+
+void Particle::addParticle(Particle particle) {
+    particles.push_back(particle);
+}
+
+void Particle::processParticles(Window* window, float deltaTime) {
+    auto particle = particles.begin();
+    while (particle != particles.end()) {
+        particle->update(window, deltaTime);
+        particle->draw(window->getRenderer());
+
+        if (!particle->isActive())
+            particle = particles.erase(particle);
+        else
+            ++particle;
+    }
 }

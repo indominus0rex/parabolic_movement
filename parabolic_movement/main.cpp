@@ -17,11 +17,11 @@ int main(int argc, char* argv[]) {
     Window* window = new Window("Title", 1280, 960, 640, 480, SDL_WINDOW_RESIZABLE);
 
     Button spawnButton(window->logWidth() - 80, window->logHeight() - 30, 50, 20, {0, 102, 204, 255});
+    Particle particles;
 
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
 
-    std::vector<Particle> particles;
     
     while (running) {
     
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     if (spawnButton.isHovering()) {
-                        particles.push_back(Particle(10, window->logHeight() - 100, 300, -800, {255, 255, 255, 255}));
+                        particles.addParticle(Particle(10, window->logHeight() - 100, 300, -800, {255, 255, 255, 255}));
                     }
         
                     break;
@@ -78,21 +78,11 @@ int main(int argc, char* argv[]) {
         spawnButton.draw(window->getRenderer());
         
         // update particles
-        auto particle = particles.begin();
-        while (particle != particles.end()) {
-            particle->update(window, deltaTime);
-            particle->draw(window->getRenderer());
-
-            if (!particle->isActive())
-                particle = particles.erase(particle);
-            else
-                ++particle;
-        }
+        particles.processParticles(window, deltaTime);
 
         //display time elapse
         SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
         SDL_RenderDebugText(window->getRenderer(), 10, 10, fmt::format("Current Time = {:.3f}s", currentTime).c_str());
-    
         
         //update frame
         window->updateFrame();
