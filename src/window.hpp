@@ -6,8 +6,8 @@
 class Window {
 private:
 
-    SDL_Window* window = nullptr;
-    SDL_Renderer* renderer = nullptr;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
 
     int windowH;
     int windowW;
@@ -30,7 +30,7 @@ public:
     SDL_Window* getWindow() const;
     SDL_Renderer* getRenderer() const;
     
-    void setSize(int w, int h);
+    void updateSize(int w, int h);
     void setTitle(const std::string& newTitle);
     void toggleFullscreen();
     void refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a); 

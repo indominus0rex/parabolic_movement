@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
                 case SDL_EVENT_WINDOW_RESIZED: {
                     int tempW, tempH;
                     SDL_GetWindowSize(window->getWindow(), &tempW, &tempH);
-                    window->setSize(tempW, tempH);
+                    window->updateSize(tempW, tempH);
                     break;
                 }
 

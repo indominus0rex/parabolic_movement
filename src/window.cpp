@@ -24,7 +24,7 @@ int Window::logWidth() const { return windowLogW; }
 SDL_Window* Window::getWindow() const { return window; }
 SDL_Renderer* Window::getRenderer() const { return renderer; }
 
-void Window::setSize(int w, int h) { windowH = h; windowW = w; }
+void Window::updateSize(int w, int h) { windowH = h; windowW = w; }
 void Window::setTitle(const std::string& newTitle) { SDL_SetWindowTitle(window, newTitle.c_str()); }
 void Window::toggleFullscreen() {
     int flag = SDL_GetWindowFlags(window);
