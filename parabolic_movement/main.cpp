@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-#include <iostream>
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
-
-int main(int argc, char* argv[]) {
-
-    int w = 1280;
-    int h = 900;
-
-    SDL_Window *mainWindow;
-    SDL_Renderer *mainRenderer;
-    mainWindow = SDL_CreateWindow("Title", w, h, SDL_WINDOW_RESIZABLE);
-    mainRenderer = SDL_CreateRenderer(mainWindow, nullptr);
-
-    bool running = true;
-
-    while (running) {
-=======
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -48,7 +29,6 @@ int main(int argc, char* argv[]) {
         float deltaTime = currentTime - prevTime;
         prevTime = currentTime;
         
->>>>>>> feature
         SDL_Event event;
 
         while (SDL_PollEvent(&event)) {
@@ -57,20 +37,6 @@ int main(int argc, char* argv[]) {
                     running = false;
                     break;
                 }
-<<<<<<< HEAD
-            }
-        }
-
-        SDL_SetRenderDrawColor(mainRenderer, 255, 255, 255, 255);
-        SDL_RenderClear(mainRenderer);
-
-        
-        SDL_RenderPresent(mainRenderer);
-    }
-
-    SDL_DestroyWindow(mainWindow);
-
-=======
 
                 case SDL_EVENT_WINDOW_RESIZED: {
                     int tempW, tempH;
@@ -124,7 +90,6 @@ int main(int argc, char* argv[]) {
 
     delete window;
     
->>>>>>> feature
     SDL_Quit();
 
     return 0;
