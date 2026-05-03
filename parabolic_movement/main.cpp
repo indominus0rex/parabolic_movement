@@ -7,9 +7,9 @@
 #include <iostream>
 #include <algorithm>
 
-#include "window.h"
-#include "button.h"
-#include "particle.h"
+#include "window.hpp"
+#include "button.hpp"
+#include "particle.hpp"
 
 int main(int argc, char* argv[]) {
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
                 }
 
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-                    if (spawnButton.isHover) 
+                    if (spawnButton.isHovering()) 
                         particles.push_back(Particle(10, window->logHeight() - 100, 300, -800, {255, 255, 255, 255}));
         
                     break;
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
         
         //cleanup previous frame
-        window->cleanup(20, 10, 30);
+        window->refreshRenderer(20, 10, 30);
         
         //display particle spawn button
         spawnButton.draw(window->getRenderer());
