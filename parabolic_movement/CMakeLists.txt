@@ -1,10 +1,5 @@
 set(SDL3_DIR "C:/SDKs/SDL3-3.4.4/x86_64-w64-mingw32/lib/cmake/SDL3")
-<<<<<<< HEAD
-
-find_package(SDL3 REQUIRED)
-=======
 set(SDL3_image_DIR "C:/SDKs/SDL3_image-3.4.2/x86_64-w64-mingw32/lib/cmake/SDL3_image")
->>>>>>> feature
 
 find_package(SDL3 REQUIRED)
 find_package(SDL3_image REQUIRED)
