@@ -31,6 +31,8 @@ int main(int argc, char* argv[]) {
         float deltaTime = currentTime - prevTime;
         prevTime = currentTime;
         
+        std::vector<std::unique_ptr<Object>> newObjects;
+
         SDL_Event event;
 
         while (SDL_PollEvent(&event)) {
@@ -38,7 +40,7 @@ int main(int argc, char* argv[]) {
                 Button* button = dynamic_cast<Button*>(object.get());
 
                 if (button) {
-                    button->handleEvents(event, objects, window);
+                    button->handleEvents(event, newObjects, window);
                 }
             }
 
@@ -60,6 +62,14 @@ int main(int argc, char* argv[]) {
                     break;
                 }
             }
+        }
+
+        //pusing new object into object
+        if (!newObjects.empty()) {
+            for (auto& object : newObjects) {
+                objects.push_back(std::move(object));
+            }
+            newObjects.clear();
         }
 
         //update objects
