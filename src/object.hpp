@@ -1,6 +1,10 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <vector>
+#include <memory>
+
+#include "window.hpp"
 
 class Object {
 protected:
@@ -15,28 +19,13 @@ protected:
 
 public:
 
-    Object(float x, float y, float w, float h);
+    Object(float x, float y, float w, float h, bool dynamic, bool canCollide);
 
     virtual ~Object() = default;
 
-    virtual void update(float deltaTime) = 0;
-    virtual void draw(SDL_Renderer* renderer) = 0;
+    virtual void update(Window* window, float deltaTime) {}
+    virtual void draw(SDL_Renderer* renderer) {}
+    virtual void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {}
 
     bool checkCollision(float otherX, float otherY, float otherW, float otherH) const;
-};
-
-class Particle : public Object {
-public:
-    
-    using Object::Object;
-    void update(float deltaTime) override;
-    void draw(SDL_Renderer* renderer) override;
-};
-
-class Button : public Object {
-public:
-
-    using Object::Object;
-    void update(float deltaTime) override;
-    void draw(SDL_Renderer* renderer) override;
 };

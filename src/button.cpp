@@ -1,14 +1,19 @@
 #include <string>
+#include <vector>
+#include <memory>
 
 #include "button.hpp"
+#include "object.hpp"
+#include "particle.hpp"
+#include "window.hpp"
 
-Button::Button(float x, float y, float w, float h, SDL_Color color) : rect({x, y, w, h}), baseColor(color) {
+Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, y, w, h, false, false), rect({x, y, w, h}), baseColor(color) {
     hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
 }
 
-void Button::update(float mouseX, float mouseY) {
-    isHover = rect.x <= mouseX && mouseX <= rect.x + rect.w && rect.y <= mouseY && mouseY <= rect.y + rect.h;
-}
+Button::~Button() {}
+
+void Button::update(Window* window, float deltaTime) {}
 
 void Button::draw(SDL_Renderer* renderer) {
     if (isHover) 
@@ -30,4 +35,22 @@ void Button::draw(SDL_Renderer* renderer) {
     SDL_RenderDebugText(renderer, textX, textY, "SPAWN");
 }
 
-bool Button::isHovering() const { return isHover; }
+void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {
+    if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+        if (isHover) {
+            objects.push_back(std::make_unique<Particle>(0, window->logHeight() - 30, 10, 10, 100, -800, SDL_Color{255, 255, 255, 255}));
+
+            SDL_Log("Particle Spawned");
+        }
+    }
+
+    if (event.type == SDL_EVENT_MOUSE_MOTION) {
+        float winX = event.button.x;
+        float winY = event.button.y;
+
+        float mouseX = winX * ((float)window->logWidth() / window->Width());
+        float mouseY = winY * ((float)window->logHeight()/ window->Height());
+
+        isHover = rect.x <= mouseX && mouseX <= rect.x + rect.w && rect.y <= mouseY && mouseY <= rect.y + rect.h;
+    }
+}

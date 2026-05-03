@@ -4,26 +4,21 @@
 #include <vector>
 
 #include "window.hpp"
+#include "object.hpp"
 
-class Particle {
+class Particle : public Object {
 
-    float x;
-    float y;
     float vx;
     float vy;
-    bool active;
     SDL_Color color;
-    std::vector<Particle> particles;
     
 public:
 
-    Particle();
-    Particle(float x, float y, float ux, float uy, SDL_Color color);
+    Particle(float x, float y, float w, float h, float ux, float uy, SDL_Color color);
     
+    ~Particle();
+
     void update(Window* window, float deltaTime);
     void draw(SDL_Renderer* renderer);
-    void addParticle(Particle particle);
-    void processParticles(Window* window, float deltaTime);
-
-    bool isActive() const { return active; }
+    void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window);
 };

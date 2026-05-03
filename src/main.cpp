@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
 #include "window.hpp"
 #include "button.hpp"
@@ -16,12 +17,13 @@ int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
     Window* window = new Window("Title", 1280, 960, 640, 480, SDL_WINDOW_RESIZABLE);
 
-    Button spawnButton(window->logWidth() - 80, window->logHeight() - 30, 50, 20, {0, 102, 204, 255});
-    Particle particles;
+    std::vector<std::unique_ptr<Object>> objects;
+
+    //adding button
+    objects.push_back(std::make_unique<Button>(window->logWidth() - 80, window->logHeight() - 30, 50, 20, SDL_Color{0, 102, 204, 255}));
 
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
-
     
     while (running) {
     
@@ -32,6 +34,14 @@ int main(int argc, char* argv[]) {
         SDL_Event event;
 
         while (SDL_PollEvent(&event)) {
+            for (auto& object : objects) {
+                Button* button = dynamic_cast<Button*>(object.get());
+
+                if (button) {
+                    button->handleEvents(event, objects, window);
+                }
+            }
+
             switch(event.type) {
                 case SDL_EVENT_QUIT: {
                     running = false;
@@ -49,36 +59,20 @@ int main(int argc, char* argv[]) {
                     window->toggleFullscreen();
                     break;
                 }
-
-                case SDL_EVENT_MOUSE_MOTION: {
-                    SDL_ConvertEventToRenderCoordinates(window->getRenderer(), &event);
-
-                    float mouseX = event.button.x;
-                    float mouseY = event.button.y;
-                    spawnButton.update(mouseX, mouseY);
-                    
-                    break;
-                }
-
-                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-                    if (spawnButton.isHovering()) {
-                        particles.addParticle(Particle(10, window->logHeight() - 100, 300, -800, {255, 255, 255, 255}));
-                    }
-        
-                    break;
-                }
             }
         }
 
+        //update objects
+        for (auto& object : objects) {
+            object->update(window, deltaTime);
+        }
         
         //cleanup previous frame
         window->refreshRenderer(20, 10, 30, 255);
         
-        //display particle spawn button
-        spawnButton.draw(window->getRenderer());
-        
-        // update particles
-        particles.processParticles(window, deltaTime);
+        for (auto& object : objects) {
+            object->draw(window->getRenderer());
+        }
 
         //display time elapse
         SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);

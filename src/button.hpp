@@ -2,19 +2,22 @@
 
 #include <SDL3/SDL.h>
 
-class Button {
+#include "object.hpp"
+
+class Button : public Object {
 
     SDL_FRect rect;
     SDL_Color baseColor;
     SDL_Color hoverColor;
-    bool isHover = false;
+    bool isHover;
 
 public:
     
     Button(float x, float y, float w, float h, SDL_Color color);
 
-    void update(float mouseX, float mouseY);
-    void draw(SDL_Renderer* renderer);
+    ~Button();
 
-    bool isHovering() const;
+    void update(Window* window, float deltaTime) override;
+    void draw(SDL_Renderer* renderer) override;
+    void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window);
 };
