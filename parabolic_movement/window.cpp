@@ -1,5 +1,3 @@
-#pragma once
-
 #include "window.hpp"
 
 Window::Window(const std::string& windowTitle, int windowWidth, int windowHeight, int logW, int logH, SDL_WindowFlags windowFlag)
@@ -35,7 +33,7 @@ void Window::toggleFullscreen() {
     else 
         SDL_SetWindowFullscreen(window, true);
 }
-void Window::refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255) {
+void Window::refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
     SDL_RenderClear(renderer);
 } 

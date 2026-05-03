@@ -4,7 +4,7 @@ set(SDL3_image_DIR "C:/SDKs/SDL3_image-3.4.2/x86_64-w64-mingw32/lib/cmake/SDL3_i
 find_package(SDL3 REQUIRED)
 find_package(SDL3_image REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp particle.cpp button.cpp)
+add_executable(${PROJECT_NAME} main.cpp particle.cpp button.cpp window.cpp)
 
 ######################## fmt #######################
 

@@ -1,8 +1,6 @@
-#pragma once
+#include "particle.hpp"
 
-#include <particle.hpp>
-
-Particle::Particle(float x, float y, float ux, float uy, SDL_Color color) : x(x), y(y), vx(ux), vy(uy), color(color) {}
+Particle::Particle(float x, float y, float ux, float uy, SDL_Color color) : x(x), y(y), vx(ux), vy(uy), color(color), active(true) {}
 
 void Particle::update(Window* window, float deltaTime) {
         

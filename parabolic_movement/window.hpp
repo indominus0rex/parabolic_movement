@@ -33,6 +33,6 @@ public:
     void setSize(int w, int h);
     void setTitle(const std::string& newTitle);
     void toggleFullscreen();
-    void refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255); 
+    void refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a); 
     void updateFrame();
 };

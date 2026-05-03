@@ -61,8 +61,9 @@ int main(int argc, char* argv[]) {
                 }
 
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-                    if (spawnButton.isHovering()) 
+                    if (spawnButton.isHovering()) {
                         particles.push_back(Particle(10, window->logHeight() - 100, 300, -800, {255, 255, 255, 255}));
+                    }
         
                     break;
                 }
@@ -71,12 +72,12 @@ int main(int argc, char* argv[]) {
 
         
         //cleanup previous frame
-        window->refreshRenderer(20, 10, 30);
+        window->refreshRenderer(20, 10, 30, 255);
         
         //display particle spawn button
         spawnButton.draw(window->getRenderer());
         
-        //update particles
+        // update particles
         auto particle = particles.begin();
         while (particle != particles.end()) {
             particle->update(window, deltaTime);
