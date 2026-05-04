@@ -5,13 +5,13 @@
 #include "object.hpp"
 
 class Button : public Object {
+public:
 
     SDL_FRect rect;
     SDL_Color baseColor;
     SDL_Color hoverColor;
     bool isHover;
-
-public:
+    
     
     Button(float x, float y, float w, float h, SDL_Color color);
 
@@ -19,6 +19,4 @@ public:
 
     void draw(SDL_Renderer* renderer) override;
     void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) override;
-
-    SDL_FRect getRect() const { return rect; }
 };
