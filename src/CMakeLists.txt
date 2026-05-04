@@ -1,37 +1,50 @@
-set(SDL3_DIR "C:/SDKs/SDL3-3.4.4/x86_64-w64-mingw32/lib/cmake/SDL3")
-set(SDL3_image_DIR "C:/SDKs/SDL3_image-3.4.2/x86_64-w64-mingw32/lib/cmake/SDL3_image")
+add_executable(${PROJECT_NAME} 
+  main.cpp 
+  particle.cpp 
+  button.cpp 
+  window.cpp 
+  object.cpp
+)
 
-find_package(SDL3 REQUIRED)
-find_package(SDL3_image REQUIRED)
+include (FetchContent)
 
-add_executable(${PROJECT_NAME} main.cpp particle.cpp button.cpp window.cpp object.cpp)
-
-######################## fmt #######################
-
-include(FetchContent)
-
+#fmt
 FetchContent_Declare(
   fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt
-  GIT_TAG        e69e5f977d458f2650bb346dadf2ad30c5320281) # 10.2.1
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG 12.1.0      
+)
 FetchContent_MakeAvailable(fmt)
 
-######################## SDL3dll ###################
+#glm
+FetchContent_Declare(
+  glm
+  GIT_REPOSITORY https://github.com/g-truc/glm.git
+  GIT_TAG 1.0.3
+)
+FetchContent_MakeAvailable(glm)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "C:/SDKs/SDL3-3.4.4/x86_64-w64-mingw32/bin/SDL3.dll"
-  $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-
-
-####################### SDL3_image dll #####################
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-   "C:/SDKs/SDL3_image-3.4.2/x86_64-w64-mingw32/bin/SDL3_image.dll"
-  $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+#sdl3
+FetchContent_Declare(
+  SDL3
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+  GIT_TAG release-3.4.8
+) # 10.2.1
+FetchContent_MakeAvailable(SDL3)
 
 set(CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+  SDL3::SDL3 
+  fmt::fmt 
+  glm::glm
+)
+
+#dlls
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>
+  $<TARGET_FILE_DIR:${PROJECT_NAME}>
+  COMMAND_EXPAND_LISTS
+)
