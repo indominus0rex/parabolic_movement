@@ -2,13 +2,14 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <random>
 
 #include "button.hpp"
 #include "object.hpp"
 #include "particle.hpp"
 #include "window.hpp"
 
-Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, y, w, h, false, false), rect({x, y, w, h}), baseColor(color) {
+Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, y, w, h, false), rect({x, y, w, h}), baseColor(color) {
     hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
 }
 
@@ -37,7 +38,10 @@ void Button::draw(SDL_Renderer* renderer) {
 void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         if (isHover) {
-            objects.push_back(std::make_unique<Particle>(0, window->logHeight() - 30, 10, 10, 100, -800, 1, SDL_Color{255, 255, 255, 255}));
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<Uint8> distr(0, 255);
+            objects.push_back(std::make_unique<Particle>(0, 30, 10, 10, 100, 0, 1, SDL_Color{distr(gen), distr(gen), distr(gen), 255}));
         }
     }
 

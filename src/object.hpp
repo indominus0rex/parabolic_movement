@@ -7,19 +7,17 @@
 #include "window.hpp"
 
 class Object {
-protected:
+public:
 
     float x;
     float y;
     float w;
     float h;
     SDL_Color color;
-    bool dynamic;
+    SDL_FRect rect;
     bool canCollide;
 
-public:
-
-    Object(float x, float y, float w, float h, bool dynamic, bool canCollide);
+    Object(float x, float y, float w, float h, bool canCollide);
 
     virtual ~Object() = default;
 
@@ -27,7 +25,4 @@ public:
     virtual void draw(SDL_Renderer* renderer) {}
     virtual void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {}
     virtual void onCollision(Object* other) {}
-    virtual SDL_FRect getRect() const = 0;
-
-    bool checkCollision(float otherX, float otherY, float otherW, float otherH) const;
 };
