@@ -14,8 +14,6 @@ Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, 
 
 Button::~Button() {}
 
-void Button::update(Window* window, float deltaTime) {}
-
 void Button::draw(SDL_Renderer* renderer) {
     if (isHover) 
         SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
@@ -39,9 +37,7 @@ void Button::draw(SDL_Renderer* renderer) {
 void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         if (isHover) {
-            objects.push_back(std::make_unique<Particle>(0, window->logHeight() - 30, 10, 10, 100, -800, SDL_Color{255, 255, 255, 255}));
-
-            SDL_Log("Particle Spawned");
+            objects.push_back(std::make_unique<Particle>(0, window->logHeight() - 30, 10, 10, 100, -800, 1, SDL_Color{255, 255, 255, 255}));
         }
     }
 

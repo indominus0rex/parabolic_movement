@@ -17,7 +17,8 @@ public:
 
     ~Button();
 
-    void update(Window* window, float deltaTime) override;
     void draw(SDL_Renderer* renderer) override;
-    void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window);
+    void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) override;
+
+    SDL_FRect getRect() const { return rect; }
 };

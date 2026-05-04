@@ -26,8 +26,8 @@ public:
     virtual void update(Window* window, float deltaTime) {}
     virtual void draw(SDL_Renderer* renderer) {}
     virtual void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {}
+    virtual void onCollision(Object* other) {}
+    virtual SDL_FRect getRect() const = 0;
 
     bool checkCollision(float otherX, float otherY, float otherW, float otherH) const;
-
-    void handleCollision(float otherX, float otherY, float otherW, float otherH);
 };

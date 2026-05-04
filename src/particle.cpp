@@ -1,11 +1,12 @@
 #include <iostream>
+#include <math.h>
 
 #include "particle.hpp"
 #include "window.hpp"
 #include "object.hpp"
 
-Particle::Particle(float x, float y, float w, float h, float ux, float uy, SDL_Color color) : 
-    Object(x, y, w, h, true, true), vx(ux), vy(uy), color(color) {}
+Particle::Particle(float x, float y, float w, float h, float ux, float uy, float mass, SDL_Color color) : 
+    Object(x, y, w, h, true, true), rect({x, y, w, h}), vx(ux), vy(uy), color(color), momentum(mass * sqrt(ux * ux + uy * uy)) {}
 
 Particle::~Particle() {}
 
@@ -15,24 +16,6 @@ void Particle::update(Window* window, float deltaTime) {
 
     x += vx * deltaTime;
     y += vy * deltaTime;
-
-    if (x < 0 || x > window->logWidth() || y < 0 || y > window->logHeight()) {
-        float x_to_border_left = x;
-        float x_to_border_right = window->logWidth() - x;
-
-        if (x_to_border_left > x_to_border_right)
-            x = window->logWidth();
-        else
-            x = 0;
-        
-        float y_to_border_top = y;
-        float y_to_border_bottom = window->logHeight() - y;
-
-        if (y_to_border_bottom > y_to_border_top)
-            y = 0;
-        else
-            y = window->logHeight();
-    }
 }
 
 void Particle::draw(SDL_Renderer* renderer) {
@@ -41,4 +24,9 @@ void Particle::draw(SDL_Renderer* renderer) {
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void Particle::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {}
+void Particle::onCollision(Object* other) {
+    //hit another particle  
+    if (dynamic_cast<Particle*>(other)) {
+        Particle* b = dynamic_cast<Particle*>(other);
+    }
+}
