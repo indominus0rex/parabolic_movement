@@ -31,7 +31,6 @@ public:
                     continue;
 
                 if (checkAABB(a, b)) {
-                    std::cout << "collided" << '\n';
                     a->onCollision(b);
                     b->onCollision(a);
                 }

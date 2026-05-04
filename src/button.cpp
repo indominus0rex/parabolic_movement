@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <random>
 
 #include "button.hpp"
 #include "object.hpp"
@@ -37,7 +38,10 @@ void Button::draw(SDL_Renderer* renderer) {
 void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         if (isHover) {
-            objects.push_back(std::make_unique<Particle>(0, 30, 10, 10, 100, 0, 1, SDL_Color{255, 255, 255, 255}));
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<Uint8> distr(0, 255);
+            objects.push_back(std::make_unique<Particle>(0, 30, 10, 10, 100, 0, 1, SDL_Color{distr(gen), distr(gen), distr(gen), 255}));
         }
     }
 

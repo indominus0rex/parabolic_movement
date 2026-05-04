@@ -51,35 +51,35 @@ void Particle::onCollision(Object* other) {
         if (!p->canCollide || !this->canCollide)
             return;
             
-        // std::swap(vx, p->vx);
-        // std::swap(vy, p->vy);
+        std::swap(vx, p->vx);
+        std::swap(vy, p->vy);
 
         SDL_FRect c;
 
-        // SDL_GetRectIntersectionFloat(&rect, &p->rect, &c);
+        SDL_GetRectIntersectionFloat(&rect, &p->rect, &c);
 
-        // float pushX = c.w / 2.0f;
-        // float pushY = c.h / 2.0f;
+        float pushX = c.w / 2.0f;
+        float pushY = c.h / 2.0f;
 
-        // if (c.w > c.h) {
-        //     if (x < c.x) {
-        //         x -= pushX;
-        //         p->x += pushX;
-        //     }
-        //     else if (x > c.x) {
-        //         x += pushX;
-        //         p->x -= pushX;
-        //     }
-        // }
-        // else if (c.w < c.h) {
-        //     if (y < c.y) {
-        //         y -= pushY;
-        //         p->y += pushY;
-        //     }
-        //     else if (y > c.y) {
-        //         y += pushY;
-        //         p->y -= pushY;
-        //     }
-        // }
+        if (c.w < c.h) {
+            if (x < p->x) {
+                x -= pushX;
+                p->x += pushX;
+            }
+            else if (x > p->x) {
+                x += pushX;
+                p->x -= pushX;
+            }
+        }
+        else if (c.w > c.h) {
+            if (y < p->y) {
+                y += pushY;
+                p->y -= pushY;
+            }
+            else if (y > p->y) {
+                y -= pushY;
+                p->y += pushY;
+            }
+        }
     }
 }
