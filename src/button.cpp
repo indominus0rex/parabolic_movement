@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 #include "button.hpp"
 #include "object.hpp"
@@ -22,7 +23,7 @@ void Button::draw(SDL_Renderer* renderer) {
         SDL_SetRenderDrawColor(renderer, baseColor.r, baseColor.g, baseColor.b, baseColor.a);
 
     SDL_RenderFillRect(renderer, &rect);
-    
+
     //draw text
     std::string spawnText = "SPAWN";
     float textWidth = (float) spawnText.length() * 8.0f;
@@ -45,11 +46,10 @@ void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Ob
     }
 
     if (event.type == SDL_EVENT_MOUSE_MOTION) {
-        float winX = event.button.x;
-        float winY = event.button.y;
+        float mouseX;
+        float mouseY;
 
-        float mouseX = winX * ((float)window->logWidth() / window->Width());
-        float mouseY = winY * ((float)window->logHeight()/ window->Height());
+        SDL_RenderCoordinatesFromWindow(window->getRenderer(), event.button.x, event.button.y, &mouseX, &mouseY);
 
         isHover = rect.x <= mouseX && mouseX <= rect.x + rect.w && rect.y <= mouseY && mouseY <= rect.y + rect.h;
     }

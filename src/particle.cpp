@@ -15,6 +15,24 @@ void Particle::update(Window* window, float deltaTime) {
 
     x += vx * deltaTime;
     y += vy * deltaTime;
+
+    if (x < 0 || x > window->logWidth() || y < 0 || y > window->logHeight()) {
+        float x_to_border_left = x;
+        float x_to_border_right = window->logWidth() - x;
+
+        if (x_to_border_left > x_to_border_right)
+            x = window->logWidth();
+        else
+            x = 0;
+        
+        float y_to_border_top = y;
+        float y_to_border_bottom = window->logHeight() - y;
+
+        if (y_to_border_bottom > y_to_border_top)
+            y = 0;
+        else
+            y = window->logHeight();
+    }
 }
 
 void Particle::draw(SDL_Renderer* renderer) {

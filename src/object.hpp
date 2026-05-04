@@ -28,4 +28,6 @@ public:
     virtual void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {}
 
     bool checkCollision(float otherX, float otherY, float otherW, float otherH) const;
+
+    void handleCollision(float otherX, float otherY, float otherW, float otherH);
 };

@@ -14,6 +14,8 @@ private:
     int windowLogH;
     int windowLogW;
 
+    bool isFullscreen;
+
 public:
     
     Window(const std::string& windowTitle, int windowWidth, int windowHeight, int logW, int logH, SDL_WindowFlags windowFlag);

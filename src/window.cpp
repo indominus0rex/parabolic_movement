@@ -1,14 +1,15 @@
+#include <iostream>
+
 #include "window.hpp"
 
 Window::Window(const std::string& windowTitle, int windowWidth, int windowHeight, int logW, int logH, SDL_WindowFlags windowFlag)
-    : windowH(windowHeight), windowW(windowWidth), windowLogW(logW), windowLogH(logH) { 
+    : windowH(windowHeight), windowW(windowWidth), windowLogW(logW), windowLogH(logH), isFullscreen(false) { 
     
     window = SDL_CreateWindow(windowTitle.c_str(), windowWidth, windowHeight, windowFlag);     
     if (!window) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "failed creating window", nullptr);
         
     renderer = SDL_CreateRenderer(window, nullptr);
     SDL_SetRenderLogicalPresentation(renderer, logW, logH, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-    SDL_SetRenderScale(renderer, 1.0f, 1.0f);
     if (!renderer) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "failed creating renderer", nullptr);    
 }
 
@@ -27,11 +28,14 @@ SDL_Renderer* Window::getRenderer() const { return renderer; }
 void Window::updateSize(int w, int h) { windowH = h; windowW = w; }
 void Window::setTitle(const std::string& newTitle) { SDL_SetWindowTitle(window, newTitle.c_str()); }
 void Window::toggleFullscreen() {
-    int flag = SDL_GetWindowFlags(window);
-    if (flag & SDL_WINDOW_FULLSCREEN) 
+    if (isFullscreen) {
         SDL_SetWindowFullscreen(window, false);
-    else 
+        isFullscreen = false;
+    }
+    else {
         SDL_SetWindowFullscreen(window, true);
+        isFullscreen = true;
+    }
 }
 void Window::refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     SDL_SetRenderDrawColor(renderer, r, g, b, a);

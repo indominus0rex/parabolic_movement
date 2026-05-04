@@ -15,7 +15,7 @@
 int main(int argc, char* argv[]) {
 
     SDL_Init(SDL_INIT_VIDEO);
-    Window* window = new Window("Title", 1280, 960, 640, 480, SDL_WINDOW_RESIZABLE);
+    Window* window = new Window("Title", 1280, 720, 640, 360, SDL_WINDOW_RESIZABLE);
 
     std::vector<std::unique_ptr<Object>> objects;
 
@@ -56,10 +56,14 @@ int main(int argc, char* argv[]) {
                     window->updateSize(tempW, tempH);
                     break;
                 }
+            }
 
-                case SDL_EVENT_WINDOW_ENTER_FULLSCREEN || SDL_EVENT_WINDOW_LEAVE_FULLSCREEN: {
-                    window->toggleFullscreen();
-                    break;
+            if (event.type == SDL_EVENT_KEY_UP) {
+                switch(event.key.key) {
+                    case SDLK_F11: {
+                        window->toggleFullscreen();
+                        break;
+                    }
                 }
             }
         }
