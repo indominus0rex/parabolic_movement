@@ -28,11 +28,11 @@ void Particle::update(Window* window, float deltaTime) {
     //floor
     if (y > window->logHeight() - rect.h) {
         const float velocityYLoss = -0.5f;
-        const float velocityXLoss = 2.0f;
         y = window->logHeight() - rect.h;
         rect.y = y;
         vy *= velocityYLoss;
         
+        const float velocityXLoss = 2.0f;
         if (vx > 0) 
             vx = std::max(0.0f, vx - velocityXLoss);
         else 
@@ -51,35 +51,32 @@ void Particle::onCollision(Object* other) {
         if (!p->canCollide || !this->canCollide)
             return;
             
-        std::swap(vx, p->vx);
-        std::swap(vy, p->vy);
-
         SDL_FRect c;
-
+        
         SDL_GetRectIntersectionFloat(&rect, &p->rect, &c);
-
-        float pushX = c.w / 2.0f;
-        float pushY = c.h / 2.0f;
-
+    
         if (c.w < c.h) {
+            std::swap(vx, p->vx);
             if (x < p->x) {
-                x -= pushX;
-                p->x += pushX;
+                x -= c.w;
             }
             else if (x > p->x) {
-                x += pushX;
-                p->x -= pushX;
+                x += c.w;
             }
         }
         else if (c.w > c.h) {
-            if (y < p->y) {
-                y += pushY;
-                p->y -= pushY;
+            if (y > p->y) {
+                y += c.h;
             }
-            else if (y > p->y) {
-                y -= pushY;
-                p->y += pushY;
+            else if (y < p->y) {
+                y -= c.h;
             }
+            
+            const float velocityYLoss = -0.5f;
+            vy *= velocityYLoss;
+            
+            const float velocityXLoss = 0.95f;
+            vx *= velocityXLoss;
         }
     }
 }
