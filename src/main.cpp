@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
         }
 
         //handle collisions
-        collisionManager::handleCollision(objects);
+        collisionManager::handleCollision(window, objects);
         
         //cleanup previous frame
         window->refreshRenderer(20, 10, 30, 255);

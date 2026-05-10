@@ -22,7 +22,7 @@ public:
 
     void update(Window* window, float deltaTime) override;
     void draw(SDL_Renderer* renderer) override;
-    void onCollision(Object* other) override;
+    void onCollision(Window* window, Object* other) override;
 
     float getMomentum() const { return mass * glm::length(velocity); }
 
