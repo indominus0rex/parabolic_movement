@@ -24,7 +24,7 @@ public:
     virtual void update(Window* window, float deltaTime) {}
     virtual void draw(SDL_Renderer* renderer) {}
     virtual void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {}
-    virtual void onCollision(Object* other) {}
+    virtual void onCollision(Window* window, Object* other) {}
 
     virtual glm::vec2 getPosition() const { return position; }
     virtual glm::vec2 getSize() const { return size; }

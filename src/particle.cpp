@@ -17,21 +17,26 @@ Particle::Particle(float x, float y, float w, float h, float ux, float uy, float
 Particle::~Particle() {}
 
 void Particle::update(Window* window, float deltaTime) {
-    const float gravity = 9.8f * 0.01f;
+    const float gravity = 9.8f * 0.01;
     this->velocity.y += gravity;
     this->position += velocity * deltaTime;
 
     //floor
-    if (this->position.y > window->logHeight() - this->size.y) {
+    if (this->position.y + this->size.y > window->logHeight()) {
         const float velocityYLoss = -0.5f;
         this->velocity.y *= velocityYLoss;
         this->position.y = window->logHeight() - this->size.y;
         
-        const float velocityXLoss = 2.0f;
-        if (this->velocity.x > 0) 
-            this->velocity.x = std::max(0.0f, this->velocity.x - velocityXLoss);
-        else 
-            this->velocity.x = std::min(0.0f, this->velocity.x + velocityXLoss);
+        const float energyLoss = 0.99f;
+        this->velocity.x *= energyLoss;
+
+        if (std::abs(this->velocity.x < 0.1f)) {
+            this->velocity.x = 0;
+        }
+
+        if (std::abs(this->velocity.y < 0.1f)) {
+            this->velocity.y = 0;
+        }
     }
 }
 
@@ -43,7 +48,7 @@ void Particle::draw(SDL_Renderer* renderer) {
     SDL_RenderFillRect(renderer, &currentRect);
 }
 
-void Particle::onCollision(Object* other) {
+void Particle::onCollision(Window* window, Object* other) {
     //hit another particle  
     if (Particle* p = dynamic_cast<Particle*>(other)) {
         if (!p->getCanCollide() || !this->getCanCollide())
@@ -55,10 +60,6 @@ void Particle::onCollision(Object* other) {
         
         SDL_GetRectIntersectionFloat(&rectA, &rectB, &rectC);
         
-        
-        rectC.w += 0.1f;
-        rectC.h += 0.1f;
-        
         if (rectC.w < rectC.h) {
             if (this->position.x < p->position.x) {
                 this->position.x -= rectC.w;
@@ -69,19 +70,19 @@ void Particle::onCollision(Object* other) {
         }
         else if (rectC.w > rectC.h) {
             if (this->position.y > p->position.y) {
-                this->position.y += rectC.h;
+                this->position.y += rectC.h / 2.0f;
+                p->position.y -= rectC.h / 2.0f;
+                if (this->position.y + this->size.y > window->logHeight()) 
+                    this->position.y = window->logHeight() - this->size.y;
             }
             else if (this->position.y < p->position.y) {
-                this->position.y -= rectC.h;
+                p->position.y += rectC.h /= 2.0f;
+                this->position.y -= rectC.h / 2.0f;
+                this->velocity.y *= -0.5f;
             }
-            
+
             const float energyLoss = 0.99f;
-            
             this->velocity *= energyLoss;
-            p->velocity *= energyLoss;
         }
-        
-        std::swap(this->velocity, p->velocity);
-        
     }
 }

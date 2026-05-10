@@ -5,6 +5,7 @@
 #include <iostream>
 #include <SDL3/SDL.h>
 
+#include "window.hpp"
 #include "object.hpp"
 #include "particle.hpp"
 
@@ -19,7 +20,7 @@ private:
 
 public:
 
-    static void handleCollision(std::vector<std::unique_ptr<Object>>& objects) {
+    static void handleCollision(Window* window, std::vector<std::unique_ptr<Object>>& objects) {
         for (size_t i = 0; i < objects.size(); i++) {
             Object* a = objects[i].get();
 
@@ -33,8 +34,8 @@ public:
                     continue;
 
                 if (checkAABB(a, b)) {
-                    a->onCollision(b);
-                    b->onCollision(a);
+                    a->onCollision(window, b);
+                    b->onCollision(window, a);
                 }
             }
         }
