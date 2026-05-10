@@ -17,7 +17,7 @@ Particle::Particle(float x, float y, float w, float h, float ux, float uy, float
 Particle::~Particle() {}
 
 void Particle::update(Window* window, float deltaTime) {
-    const float gravity = 9.8f * 0.01f;
+    const float gravity = 9.8f * 0.01;
     this->velocity.y += gravity;
     this->position += velocity * deltaTime;
 
@@ -27,6 +27,9 @@ void Particle::update(Window* window, float deltaTime) {
         this->velocity.y *= velocityYLoss;
         this->position.y = window->logHeight() - this->size.y;
         
+        const float energyLoss = 0.99f;
+        this->velocity.x *= energyLoss;
+
         if (std::abs(this->velocity.x < 0.1f)) {
             this->velocity.x = 0;
         }
@@ -78,7 +81,7 @@ void Particle::onCollision(Window* window, Object* other) {
                 this->velocity.y *= -0.5f;
             }
 
-            const float energyLoss = 0.95f;
+            const float energyLoss = 0.99f;
             this->velocity *= energyLoss;
         }
     }
