@@ -12,7 +12,9 @@ class collisionManager {
 private:
 
     static bool checkAABB(Object* a, Object* b) {
-        return SDL_HasRectIntersectionFloat(&a->rect, &b->rect);
+        SDL_FRect rectA = a->getRect();
+        SDL_FRect rectB = b->getRect();
+        return SDL_HasRectIntersectionFloat(&rectA, &rectB);
     }
 
 public:
@@ -21,13 +23,13 @@ public:
         for (size_t i = 0; i < objects.size(); i++) {
             Object* a = objects[i].get();
 
-            if (!a->canCollide)
+            if (!a->getCanCollide())
                 continue;
 
             for (size_t j = i + 1; j < objects.size(); j++) {
                 Object* b = objects[j].get();
 
-                if (!b->canCollide)
+                if (!b->getCanCollide())
                     continue;
 
                 if (checkAABB(a, b)) {
