@@ -67,12 +67,14 @@ void Particle::onCollision(Window* window, Object* other) {
         }
         else if (rectC.w > rectC.h) {
             if (this->position.y > p->position.y) {
-                this->position.y += rectC.h;
+                this->position.y += rectC.h / 2.0f;
+                p->position.y -= rectC.h / 2.0f;
                 if (this->position.y + this->size.y > window->logHeight()) 
                     this->position.y = window->logHeight() - this->size.y;
             }
             else if (this->position.y < p->position.y) {
-                this->position.y -= rectC.h;
+                p->position.y += rectC.h /= 2.0f;
+                this->position.y -= rectC.h / 2.0f;
                 this->velocity.y *= -0.5f;
             }
 
