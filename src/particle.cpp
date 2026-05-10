@@ -7,76 +7,81 @@
 #include "object.hpp"
 
 Particle::Particle(float x, float y, float w, float h, float ux, float uy, float mass, SDL_Color color) : 
-    Object(x, y, w, h, true), vx(ux), vy(uy), color(color), mass(mass) {
-        rect.x = x;
-        rect.y = y;
-        rect.w = w;
-        rect.h = h;
+    Object(x, y, w, h, true) {
+        this->mass = mass;
+        this->position = glm::vec2(x, y);
+        this->size = glm::vec2(w, h);
+        this->velocity = glm::vec2(ux, uy);
     }
 
 Particle::~Particle() {}
 
 void Particle::update(Window* window, float deltaTime) {
-    const float gravity = 9.8f * 100.0f;
-    vy += gravity * deltaTime;
-
-    x += vx * deltaTime;
-    y += vy * deltaTime;
-    rect.x = x;
-    rect.y = y;
+    const float gravity = 9.8f * 0.01f;
+    this->velocity.y += gravity;
+    this->position += velocity * deltaTime;
 
     //floor
-    if (y > window->logHeight() - rect.h) {
+    if (this->position.y > window->logHeight() - this->size.y) {
         const float velocityYLoss = -0.5f;
-        y = window->logHeight() - rect.h;
-        rect.y = y;
-        vy *= velocityYLoss;
+        this->velocity.y *= velocityYLoss;
+        this->position.y = window->logHeight() - this->size.y;
         
         const float velocityXLoss = 2.0f;
-        if (vx > 0) 
-            vx = std::max(0.0f, vx - velocityXLoss);
+        if (this->velocity.x > 0) 
+            this->velocity.x = std::max(0.0f, this->velocity.x - velocityXLoss);
         else 
-            vx = std::min(0.0f, vx + velocityXLoss);
+            this->velocity.x = std::min(0.0f, this->velocity.x + velocityXLoss);
     }
 }
 
 void Particle::draw(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderFillRect(renderer, &rect);
+
+    SDL_FRect currentRect = this->getRect();
+
+    SDL_RenderFillRect(renderer, &currentRect);
 }
 
 void Particle::onCollision(Object* other) {
     //hit another particle  
     if (Particle* p = dynamic_cast<Particle*>(other)) {
-        if (!p->canCollide || !this->canCollide)
+        if (!p->getCanCollide() || !this->getCanCollide())
             return;
             
-        SDL_FRect c;
+        SDL_FRect rectA = this->getRect();
+        SDL_FRect rectB = p->getRect();
+        SDL_FRect rectC;
         
-        SDL_GetRectIntersectionFloat(&rect, &p->rect, &c);
-    
-        if (c.w < c.h) {
-            std::swap(vx, p->vx);
-            if (x < p->x) {
-                x -= c.w;
+        SDL_GetRectIntersectionFloat(&rectA, &rectB, &rectC);
+        
+        
+        rectC.w += 0.1f;
+        rectC.h += 0.1f;
+        
+        if (rectC.w < rectC.h) {
+            if (this->position.x < p->position.x) {
+                this->position.x -= rectC.w;
             }
-            else if (x > p->x) {
-                x += c.w;
+            else if (this->position.x > p->position.x) {
+                this->position.x += rectC.w;
             }
         }
-        else if (c.w > c.h) {
-            if (y > p->y) {
-                y += c.h;
+        else if (rectC.w > rectC.h) {
+            if (this->position.y > p->position.y) {
+                this->position.y += rectC.h;
             }
-            else if (y < p->y) {
-                y -= c.h;
+            else if (this->position.y < p->position.y) {
+                this->position.y -= rectC.h;
             }
             
-            const float velocityYLoss = -0.5f;
-            vy *= velocityYLoss;
+            const float energyLoss = 0.99f;
             
-            const float velocityXLoss = 0.95f;
-            vx *= velocityXLoss;
+            this->velocity *= energyLoss;
+            p->velocity *= energyLoss;
         }
+        
+        std::swap(this->velocity, p->velocity);
+        
     }
 }
