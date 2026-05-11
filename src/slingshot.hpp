@@ -4,7 +4,7 @@
 
 #include "object.hpp"
 
-class Sling : public Object {
+class slingShot : public Object {
 protected:
-
+    
 };
