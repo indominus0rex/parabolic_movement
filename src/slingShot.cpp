@@ -18,7 +18,7 @@ void Slingshot::draw(SDL_Renderer* renderer) {
     SDL_RenderLine(renderer, startPosition.x, startPosition.y, endPosition.x, endPosition.y);
 }
 
-void Slingshot::handleEvents(SDL_Event& event, Window* window) {
+void Slingshot::handleEvents(SDL_Event& event, std::vector<std::unique_ptr<Object>>& object, Window* window) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         mouseDown = true;
         startPosition = getMousePosition(window, event);

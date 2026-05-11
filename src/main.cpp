@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
         
         while (SDL_PollEvent(&event)) {
 
-            slingshot.handleEvents(event, window);
+            // slingshot.handleEvents(event, window);
             
             for (auto& object : objects) {
                 Button* button = dynamic_cast<Button*>(object.get());
