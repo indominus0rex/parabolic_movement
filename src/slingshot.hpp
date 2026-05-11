@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include <random>
 #include <vector>
 
 #include "interaction.hpp"
@@ -43,16 +44,31 @@ protected:
         v[4] = { {end.x, end.y}, col, {0,0} }; // The Tip
         v[5] = { {headBase.x + nx * headSize, headBase.y + ny * headSize}, col, {0,0} }; // Left wing
         v[6] = { {headBase.x - nx * headSize, headBase.y - ny * headSize}, col, {0,0} }; // Right wing
-
-        // 3. The Indices (Triangulation)
+        
         // Shaft: (0,1,2) and (1,2,3) | Head: (4,5,6)
         int indices[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6 };
 
         SDL_RenderGeometry(renderer, NULL, v, 7, indices, 9);
     }
 
-    void createNewParticle(std::vector<std::unique_ptr<Object>> &objects) {
-        Particle particle(startPosition.x, startPosition.y, 50, 50, glm::distance(startPosition.x, endPosition.x), glm::distance(startPosition.y, endPosition.y), 1, SDL_Color{255, 255, 255, 255});
+    void createNewParticle(Window* window, std::vector<std::unique_ptr<Object>> &objects) {
+        float propotionY = ((float) window->logHeight() / window->Height()) * 2;
+        float propotionX = ((float) window->logWidth() / window->Width()) * 2;
+
+        float velocityY = (endPosition.y - startPosition.y) * propotionY;
+        float velocityX = (endPosition.x - startPosition.x) * propotionX;
+        float mass = 1;
+        float sizeX = 50;
+        float sizeY = 50;
+        float new_positionX = (startPosition.x - sizeX / 2);
+        float new_positionY = (startPosition.y - sizeY / 2);
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<Uint8> distr(0, 255);
+        SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
+
+        Particle particle(new_positionX, new_positionY, sizeX, sizeY, velocityX, velocityY, mass, color);
         objects.push_back(std::make_unique<Particle>(particle));
     }
 

@@ -9,7 +9,7 @@
 #include "particle.hpp"
 #include "window.hpp"
 
-Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, y, w, h, false), rect({x, y, w, h}), baseColor(color) {
+Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, y, w, h, color, false), rect({x, y, w, h}), baseColor(color) {
     hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
 }
 

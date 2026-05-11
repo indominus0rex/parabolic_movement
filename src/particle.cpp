@@ -7,10 +7,8 @@
 #include "object.hpp"
 
 Particle::Particle(float x, float y, float w, float h, float ux, float uy, float mass, SDL_Color color) : 
-    Object(x, y, w, h, true) {
+    Object(x, y, w, h, color, true) {
         this->mass = mass;
-        this->position = glm::vec2(x, y);
-        this->size = glm::vec2(w, h);
         this->velocity = glm::vec2(ux, uy);
     }
 
@@ -42,9 +40,7 @@ void Particle::update(Window* window, float deltaTime) {
 
 void Particle::draw(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
     SDL_FRect currentRect = this->getRect();
-
     SDL_RenderFillRect(renderer, &currentRect);
 }
 

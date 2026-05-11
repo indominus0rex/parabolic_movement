@@ -17,7 +17,7 @@ void Slingshot::draw(SDL_Renderer* renderer) {
     drawArrow(renderer, startPosition, endPosition, 2, 5);
 }
 
-void Slingshot::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& object) {
+void Slingshot::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         mouseDown = true;
         startPosition = getMousePosition(window, event);
@@ -29,9 +29,10 @@ void Slingshot::handleEvents(Window* window, SDL_Event& event, std::vector<std::
     }
 
     if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
-        mouseDown = false;
-        // startPosition = defaultMousePosition;
-        // endPosition = defaultMousePosition;
+        if (mouseDown) {
+            mouseDown = false;
+            createNewParticle(window, objects);
+        }
     }
 }
 
