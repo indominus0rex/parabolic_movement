@@ -4,7 +4,11 @@
 
 #include "object.hpp"
 
-class slingShot : public Object {
+class slingshot : public Object {
 protected:
     
+public:
+    slingshot(float x, float y, float w, float h);
+
+
 };
