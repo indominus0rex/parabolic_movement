@@ -11,6 +11,7 @@
 #include "button.hpp"
 #include "particle.hpp"
 #include "collisionManager.hpp"
+#include "slingshot.hpp"
 
 int main(int argc, char* argv[]) {
 
@@ -21,23 +22,29 @@ int main(int argc, char* argv[]) {
 
     //adding button
     objects.push_back(std::make_unique<Button>(window->logWidth() - 80, window->logHeight() - 30, 50, 20, SDL_Color{0, 102, 204, 255}));
+    
+    Slingshot slingshot;
 
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
     
     while (running) {
-    
+
         float currentTime = SDL_GetTicks() / 1000.0f;
         float deltaTime = currentTime - prevTime;
         prevTime = currentTime;
         
         std::vector<std::unique_ptr<Object>> newObjects;
-
+        
         SDL_Event event;
-
+        
         while (SDL_PollEvent(&event)) {
+
+            // slingshot.handleEvents(event, window);
+            
             for (auto& object : objects) {
                 Button* button = dynamic_cast<Button*>(object.get());
+                
 
                 if (button) {
                     button->handleEvents(event, newObjects, window);
