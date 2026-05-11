@@ -40,12 +40,11 @@ int main(int argc, char* argv[]) {
         
         while (SDL_PollEvent(&event)) {
 
-            // slingshot.handleEvents(event, window);
+            slingshot.handleEvents(window, event, objects);
             
             for (auto& object : objects) {
                 Button* button = dynamic_cast<Button*>(object.get());
                 
-
                 if (button) {
                     button->handleEvents(event, newObjects, window);
                 }
@@ -94,9 +93,13 @@ int main(int argc, char* argv[]) {
         //cleanup previous frame
         window->refreshRenderer(20, 10, 30, 255);
         
+        //draw objects
         for (auto& object : objects) {
             object->draw(window->getRenderer());
         }
+
+        //draw slingshot
+        slingshot.draw(window->getRenderer());
 
         //display time elapse
         SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
