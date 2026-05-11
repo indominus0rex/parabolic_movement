@@ -83,13 +83,18 @@ int main(int argc, char* argv[]) {
         }
 
         //update objects
-        for (auto& object : objects) {
-            object->update(window, deltaTime);
+        const int subSteps = 8;
+        float subDeltaTime = deltaTime / subSteps;
+
+        for (int i = 0; i < subSteps; i++) {
+            for (auto& object : objects) {
+                object->update(window, subDeltaTime);
+    
+                //handlecollision
+                collisionManager::handleCollision(window, objects);
+            }
         }
 
-        //handle collisions
-        collisionManager::handleCollision(window, objects);
-        
         //cleanup previous frame
         window->refreshRenderer(20, 10, 30, 255);
         

@@ -15,36 +15,36 @@ Particle::Particle(float x, float y, float w, float h, float ux, float uy, float
 Particle::~Particle() {}
 
 void Particle::update(Window* window, float deltaTime) {
-    const float gravity = 9.8f * 0.01;
-    this->velocity.y += gravity;
+    const float gravity = 9.8f * 100;
+    this->velocity.y += gravity * deltaTime;
     this->position += velocity * deltaTime;
 
     //floor
     if (this->position.y + this->size.y > window->logHeight()) {
         this->position.y = window->logHeight() - this->size.y;
         if (this->velocity.y)
-            this->velocity.y *= -1;
+            this->velocity.y *= -0.5f;
     }
 
     //ceiling
     if (this->position.y < 0) {
         this->position.y = 0;
         if (this->velocity.y)
-            this->velocity.y *= -1;
+            this->velocity.y *= -0.5f;
     }
 
     //left wall
     if (this->position.x < 0) {
         this->position.x = 0;
         if (this->velocity.x)
-            this->velocity.x *= -1;
+            this->velocity.x *= -0.5f;
     }
 
     //right wall
     if (this->position.x + this->size.x > window->logWidth()) {
         this->position.x = window->logWidth() - this->size.x;
         if (this->velocity.x)
-            this->velocity.x *= -1;
+            this->velocity.x *= -0.5f;
     }
 }
 
@@ -55,44 +55,42 @@ void Particle::draw(SDL_Renderer* renderer) {
 }
 
 void Particle::onCollision(Window* window, Object* other) {
-    //hit another particle  
-    if (Particle* p = dynamic_cast<Particle*>(other)) {
-        if (!p->getCanCollide() || !this->getCanCollide())
-            return;
-            
-        SDL_FRect rectA = this->getRect();
-        SDL_FRect rectB = p->getRect();
-        SDL_FRect rectC;
-        
-        SDL_GetRectIntersectionFloat(&rectA, &rectB, &rectC);
-        
-        if (rectC.w < rectC.h) {
-            if (this->position.x < p->position.x) {
-                this->position.x -= rectC.w;
-            }
-            else if (this->position.x > p->position.x) {
-                this->position.x += rectC.w;
-            }
-        }
-        else if (rectC.w > rectC.h) {
-            if (this->position.y > p->position.y) {
-                // this->position.y += rectC.h / 2.0f;
-                // p->position.y -= rectC.h / 2.0f;
-                this->position.y += rectC.h;
-                if (this->position.y + this->size.y > window->logHeight()) 
-                    this->position.y = window->logHeight() - this->size.y;
-            }
-            else if (this->position.y < p->position.y) {
-                // p->position.y += rectC.h /= 2.0f;
-                // this->position.y -= rectC.h / 2.0f;
-                this->position.y -= rectC.h;
-                this->velocity.y *= -1;
-            }
+    Particle* p = dynamic_cast<Particle*>(other);
+    if (!p || !p->getCanCollide() || !this->getCanCollide()) return;
 
-            const float energyLoss = 0.99f;
-            this->velocity *= energyLoss;
+    glm::vec2 centerA = this->position + (this->size * 0.5f);
+    glm::vec2 centerB = p->position + (p->size * 0.5f);
+
+    glm::vec2 delta = centerA - centerB;
+    float distance = glm::length(delta);
+    
+    float radiusA = this->size.x * 0.5f;
+    float radiusB = p->size.x * 0.5f;
+    float minDistance = radiusA + radiusB;
+
+    if (distance < minDistance) {
+        if (distance == 0.0f) {
+            delta = glm::vec2(0.0f, 1.0f);
+            distance = 1.0f;
         }
 
-        std::swap(this->velocity, p->velocity);
+        glm::vec2 normal = delta / distance;
+        float overlap = minDistance - distance;
+
+        this->position += normal * (overlap * 0.51f);
+        p->position    -= normal * (overlap * 0.51f);
+
+        glm::vec2 relVelocity = this->velocity - p->velocity;
+        float velAlongNormal = glm::dot(relVelocity, normal);
+
+        if (velAlongNormal > 0) return;
+
+        float bounciness = 0.5f; 
+        float j = -(1.0f + bounciness) * velAlongNormal;
+        j /= 2.0f; 
+
+        glm::vec2 impulse = j * normal;
+        this->velocity += impulse;
+        p->velocity    -= impulse;
     }
 }
