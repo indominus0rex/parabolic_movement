@@ -18,7 +18,7 @@ protected:
 public:
 
     Object() {}
-    Object(float x, float y, float w, float h, bool canCollide);
+    Object(float x, float y, float w, float h, SDL_Color color, bool canCollide);
 
     virtual ~Object() = default;
 
