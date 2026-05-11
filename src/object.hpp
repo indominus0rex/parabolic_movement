@@ -17,6 +17,7 @@ protected:
 
 public:
 
+    Object() {}
     Object(float x, float y, float w, float h, bool canCollide);
 
     virtual ~Object() = default;
