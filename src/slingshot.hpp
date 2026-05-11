@@ -4,19 +4,20 @@
 #include <glm/glm.hpp>
 
 #include "interaction.hpp"
+#include "window.hpp"
 
 class Slingshot : public Interaction {
 protected:
 
     glm::vec2 startPosition;
     glm::vec2 endPosition;
+    bool mouseDown;
 
 public:
 
-    Slingshot() {}
-    Slingshot(float x, float y, float w, float h);
+    Slingshot();
 
-    void update(Window* window, float delaTime) override;
-    void draw(SDL_Renderer* renderer) override;
-    void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) override;
+    void update(Window* window, float deltaTime) override;
+    void draw(SDL_Renderer* renderer);
+    void handleEvents(SDL_Event& event, Window* window);
 };
