@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::unique_ptr<Object>> objects;
 
     //adding button
-    objects.push_back(std::make_unique<Button>(window->logWidth() - 80, window->logHeight() - 30, 50, 20, SDL_Color{0, 102, 204, 255}));
+    // objects.push_back(std::make_unique<Button>(window->logWidth() - 80, window->logHeight() - 30, 50, 20, SDL_Color{0, 102, 204, 255}));
     
     Slingshot slingshot;
 

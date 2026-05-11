@@ -21,20 +21,30 @@ void Particle::update(Window* window, float deltaTime) {
 
     //floor
     if (this->position.y + this->size.y > window->logHeight()) {
-        const float velocityYLoss = -0.5f;
-        this->velocity.y *= velocityYLoss;
         this->position.y = window->logHeight() - this->size.y;
-        
-        const float energyLoss = 0.99f;
-        this->velocity.x *= energyLoss;
+        if (this->velocity.y)
+            this->velocity.y *= -1;
+    }
 
-        if (std::abs(this->velocity.x < 0.1f)) {
-            this->velocity.x = 0;
-        }
+    //ceiling
+    if (this->position.y < 0) {
+        this->position.y = 0;
+        if (this->velocity.y)
+            this->velocity.y *= -1;
+    }
 
-        if (std::abs(this->velocity.y < 0.1f)) {
-            this->velocity.y = 0;
-        }
+    //left wall
+    if (this->position.x < 0) {
+        this->position.x = 0;
+        if (this->velocity.x)
+            this->velocity.x *= -1;
+    }
+
+    //right wall
+    if (this->position.x + this->size.x > window->logWidth()) {
+        this->position.x = window->logWidth() - this->size.x;
+        if (this->velocity.x)
+            this->velocity.x *= -1;
     }
 }
 
@@ -66,19 +76,23 @@ void Particle::onCollision(Window* window, Object* other) {
         }
         else if (rectC.w > rectC.h) {
             if (this->position.y > p->position.y) {
-                this->position.y += rectC.h / 2.0f;
-                p->position.y -= rectC.h / 2.0f;
+                // this->position.y += rectC.h / 2.0f;
+                // p->position.y -= rectC.h / 2.0f;
+                this->position.y += rectC.h;
                 if (this->position.y + this->size.y > window->logHeight()) 
                     this->position.y = window->logHeight() - this->size.y;
             }
             else if (this->position.y < p->position.y) {
-                p->position.y += rectC.h /= 2.0f;
-                this->position.y -= rectC.h / 2.0f;
-                this->velocity.y *= -0.5f;
+                // p->position.y += rectC.h /= 2.0f;
+                // this->position.y -= rectC.h / 2.0f;
+                this->position.y -= rectC.h;
+                this->velocity.y *= -1;
             }
 
             const float energyLoss = 0.99f;
             this->velocity *= energyLoss;
         }
+
+        std::swap(this->velocity, p->velocity);
     }
 }
