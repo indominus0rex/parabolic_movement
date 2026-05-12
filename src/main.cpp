@@ -19,10 +19,8 @@ int main(int argc, char* argv[]) {
     Window* window = new Window("Title", 1280, 720, 640, 360, SDL_WINDOW_RESIZABLE);
 
     std::vector<std::unique_ptr<Object>> objects;
+    std::vector<std::unique_ptr<Object>> particles;
 
-    //adding button
-    // objects.push_back(std::make_unique<Button>(window->logWidth() - 80, window->logHeight() - 30, 50, 20, SDL_Color{0, 102, 204, 255}));
-    
     Slingshot slingshot;
 
     bool running = true;
@@ -35,18 +33,19 @@ int main(int argc, char* argv[]) {
         prevTime = currentTime;
         
         std::vector<std::unique_ptr<Object>> newObjects;
-        
+        std::vector<std::unique_ptr<Object>> newParticles;
+
         SDL_Event event;
         
         while (SDL_PollEvent(&event)) {
 
-            slingshot.handleEvents(window, event, objects);
+            slingshot.handleEvents(window, event, newParticles);
             
             for (auto& object : objects) {
                 Button* button = dynamic_cast<Button*>(object.get());
                 
                 if (button) {
-                    button->handleEvents(event, newObjects, window);
+                    button->handleEvents(event, newParticles, window);
                 }
             }
 
@@ -74,6 +73,14 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        //pushing new particle into particles
+        if (!newParticles.empty()) {
+            for (auto& particle : newParticles) {
+                particles.push_back(std::move(particle));
+            }
+            newParticles.clear();
+        }
+
         //pusing new object into object
         if (!newObjects.empty()) {
             for (auto& object : newObjects) {
@@ -83,15 +90,17 @@ int main(int argc, char* argv[]) {
         }
 
         //update objects
+        for (auto& object : objects) {
+            object->update(window, deltaTime);
+        }
+
         const int subSteps = 8;
         float subDeltaTime = deltaTime / subSteps;
 
         for (int i = 0; i < subSteps; i++) {
-            for (auto& object : objects) {
-                object->update(window, subDeltaTime);
-    
-                //handlecollision
-                collisionManager::handleCollision(window, objects);
+            for (auto& particle : particles) {
+                particle->update(window, subDeltaTime);
+                collisionManager::handleCollision(window, particles);
             }
         }
 
@@ -101,6 +110,10 @@ int main(int argc, char* argv[]) {
         //draw objects
         for (auto& object : objects) {
             object->draw(window->getRenderer());
+        }
+
+        for (auto& particle : particles) {
+            particle->draw(window->getRenderer());
         }
 
         //draw slingshot

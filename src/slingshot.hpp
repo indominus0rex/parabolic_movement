@@ -52,14 +52,11 @@ protected:
     }
 
     void createNewParticle(Window* window, std::vector<std::unique_ptr<Object>> &objects) {
-        float propotionY = ((float) window->logHeight() / window->Height()) * 2;
-        float propotionX = ((float) window->logWidth() / window->Width()) * 2;
-
-        float velocityY = (endPosition.y - startPosition.y) * propotionY;
-        float velocityX = (endPosition.x - startPosition.x) * propotionX;
+        float velocityY = (endPosition.y - startPosition.y);
+        float velocityX = (endPosition.x - startPosition.x);
         float mass = 1;
-        float sizeX = 50;
-        float sizeY = 50;
+        float sizeX = 10;
+        float sizeY = 10;
         float new_positionX = (startPosition.x - sizeX / 2);
         float new_positionY = (startPosition.y - sizeY / 2);
 
