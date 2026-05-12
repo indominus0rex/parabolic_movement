@@ -44,7 +44,7 @@ public:
                 
                 quadtree.query(seachArea, neighbors);
                 for (Object* other : neighbors) {
-                    if (object.get() != other) {
+                    if (object.get() != other && checkAABB(object.get(), other)) {
                         object->onCollision(window, other);
                     }
                 }
