@@ -94,16 +94,12 @@ int main(int argc, char* argv[]) {
             object->update(window, deltaTime);
         }
 
-        const int subSteps = 8;
-        float subDeltaTime = deltaTime / subSteps;
-
-        for (int i = 0; i < subSteps; i++) {
-            for (auto& particle : particles) {
-                particle->update(window, subDeltaTime);
-                collisionManager::handleCollision(window, particles);
-            }
+        for (auto& particle : particles) {
+            particle->update(window, deltaTime);
         }
-
+        
+        collisionManager::handleCollision(window, particles);
+        
         //cleanup previous frame
         window->refreshRenderer(20, 10, 30, 255);
         

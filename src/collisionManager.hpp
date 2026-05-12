@@ -10,6 +10,7 @@
 #include "window.hpp"
 #include "object.hpp"
 #include "particle.hpp"
+#include "quadtree.hpp"
 
 class collisionManager {
 private:
@@ -42,6 +43,31 @@ public:
         //     }
         // }
 
-        
+        Bound bound = {0, 0, window->Width(), window->Height()};
+        Quadtree quadtree(bound);
+
+        for (auto& object : objects) {
+            if (object->getCanCollide())
+                quadtree.insert(object.get());
+        }
+
+        for (int i = 0; i < 4; i++) {
+            for (auto& object : objects) {
+                std::vector<Object*> neighbors;
+
+                Bound seachArea = {object->getPosition().x - 10, 
+                                   object->getPosition().y - 10,
+                                   object->getSize().x + 20,
+                                   object->getSize().y + 20
+                                  };
+                
+                quadtree.query(seachArea, neighbors);
+                for (Object* other : neighbors) {
+                    if (object.get() != other) {
+                        object->onCollision(window, other);
+                    }
+                }
+            }
+        }
     }
 };
