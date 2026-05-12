@@ -43,7 +43,7 @@ public:
         //     }
         // }
 
-        Bound bound = {0, 0, window->Width(), window->Height()};
+        Bound bound = {0, 0, window->Width(), (float) window->Height()};
         Quadtree quadtree(bound);
 
         for (auto& object : objects) {

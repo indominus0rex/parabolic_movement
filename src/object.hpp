@@ -7,6 +7,10 @@
 
 #include "window.hpp"
 
+enum ObjectType {
+    PARTICLE
+};
+
 class Object {
 protected:
 
@@ -14,6 +18,7 @@ protected:
     glm::vec2 size;
     SDL_Color color;
     bool canCollide;
+    ObjectType objectType;
 
 public:
 
@@ -32,6 +37,7 @@ public:
     virtual SDL_Color getColor() { return color; }
     virtual SDL_FRect getRect() { return { position.x, position.y, size.x, size.y };}
     virtual bool getCanCollide() const { return canCollide; }
+    virtual ObjectType getType() const { return objectType; }
 
     virtual void setPosition(float new_x, float new_y) {
         position.x = new_x;

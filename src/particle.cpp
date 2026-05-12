@@ -54,20 +54,18 @@ void Particle::draw(SDL_Renderer* renderer) {
     SDL_RenderFillRect(renderer, &currentRect);
 }
 
+void AABBCollisionHandle(Particle* otherParticle) {
+    
+}
+
 void Particle::onCollision(Window* window, Object* other) {
     //hit another particle
-    if (Particle* otherParticle = dynamic_cast<Particle*>(other)) {
+    if (other->getType() == ObjectType::PARTICLE) {
+        Particle* otherParticle = static_cast<Particle*>(other);
+
         this->calcNewVelocity(otherParticle);
         otherParticle->calcNewVelocity(this);
 
-        SDL_FRect rectA = this->getRect();
-        SDL_FRect rectB = otherParticle->getRect();
-        SDL_FRect rectC;
-
-        SDL_GetRectIntersectionFloat(&rectA, &rectB, &rectC);
-
-        if (rectC.w < rectC.h) {
-            
-        }
+        AABBCollisionHandle(otherParticle);
     }
 }

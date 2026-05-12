@@ -24,7 +24,7 @@ private:
         float dotProduct = glm::dot(vDiff, xDiff);
         float sqLength = glm::dot(xDiff, xDiff);
 
-        glm::vec2 newVelocity = velocity - mRatio * (dotProduct / sqLength) * xDiff;
+        glm::vec2 newVelocity = velocity - mRatio * (dotProduct / (sqLength * sqLength)) * xDiff;
         velocity = newVelocity;
     }
 
