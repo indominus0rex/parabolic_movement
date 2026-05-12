@@ -55,42 +55,19 @@ void Particle::draw(SDL_Renderer* renderer) {
 }
 
 void Particle::onCollision(Window* window, Object* other) {
-    Particle* p = dynamic_cast<Particle*>(other);
-    if (!p || !p->getCanCollide() || !this->getCanCollide()) return;
+    //hit another particle
+    if (Particle* otherParticle = dynamic_cast<Particle*>(other)) {
+        this->calcNewVelocity(otherParticle);
+        otherParticle->calcNewVelocity(this);
 
-    glm::vec2 centerA = this->position + (this->size * 0.5f);
-    glm::vec2 centerB = p->position + (p->size * 0.5f);
+        SDL_FRect rectA = this->getRect();
+        SDL_FRect rectB = otherParticle->getRect();
+        SDL_FRect rectC;
 
-    glm::vec2 delta = centerA - centerB;
-    float distance = glm::length(delta);
-    
-    float radiusA = this->size.x * 0.5f;
-    float radiusB = p->size.x * 0.5f;
-    float minDistance = radiusA + radiusB;
+        SDL_GetRectIntersectionFloat(&rectA, &rectB, &rectC);
 
-    if (distance < minDistance) {
-        if (distance == 0.0f) {
-            delta = glm::vec2(0.0f, 1.0f);
-            distance = 1.0f;
+        if (rectC.w < rectC.h) {
+            
         }
-
-        glm::vec2 normal = delta / distance;
-        float overlap = minDistance - distance;
-
-        this->position += normal * (overlap * 0.51f);
-        p->position    -= normal * (overlap * 0.51f);
-
-        glm::vec2 relVelocity = this->velocity - p->velocity;
-        float velAlongNormal = glm::dot(relVelocity, normal);
-
-        if (velAlongNormal > 0) return;
-
-        float bounciness = 0.5f; 
-        float j = -(1.0f + bounciness) * velAlongNormal;
-        j /= 2.0f; 
-
-        glm::vec2 impulse = j * normal;
-        this->velocity += impulse;
-        p->velocity    -= impulse;
     }
 }
