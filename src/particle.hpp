@@ -8,11 +8,17 @@
 #include "window.hpp"
 #include "object.hpp"
 
+enum ParticleType {
+    Rect,
+    Cir
+};
+
 class Particle : public Object {
 private:
     
     glm::vec2 velocity;
     float mass;
+    ParticleType particleType;
 
     float Cr = 0.8f;
 

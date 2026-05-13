@@ -6,6 +6,8 @@
 #include "window.hpp"
 #include "object.hpp"
 
+//TODO change x, y, w, h to vec2
+
 Particle::Particle(float x, float y, float w, float h, float ux, float uy, float mass, SDL_Color color) : 
     Object(x, y, w, h, color, true) {
         this->mass = mass;

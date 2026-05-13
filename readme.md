@@ -1,1 +1,0 @@
-﻿trying to understand more of object oriented programming and also more physics
