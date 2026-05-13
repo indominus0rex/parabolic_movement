@@ -8,11 +8,8 @@
 
 //TODO change x, y, w, h to vec2
 
-Particle::Particle(float x, float y, float w, float h, float ux, float uy, float mass, SDL_Color color) : 
-    Object(x, y, w, h, color, true) {
-        this->mass = mass;
-        this->velocity = glm::vec2(ux, uy);
-    }
+Particle::Particle(glm::vec2 position, glm::vec2 size, glm::vec2 velocity, float mass, SDL_Color color) : 
+    Object(position, size, color, true), velocity(velocity), mass(mass)  {}
 
 Particle::~Particle() {}
 

@@ -9,7 +9,8 @@
 #include "particle.hpp"
 #include "window.hpp"
 
-Button::Button(float x, float y, float w, float h, SDL_Color color) : Object(x, y, w, h, color, false), rect({x, y, w, h}), baseColor(color) {
+Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color) : 
+    Object(position, size, color, false), baseColor(color) {
     hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
 }
 
@@ -21,6 +22,7 @@ void Button::draw(SDL_Renderer* renderer) {
     else 
         SDL_SetRenderDrawColor(renderer, baseColor.r, baseColor.g, baseColor.b, baseColor.a);
 
+    SDL_FRect rect = this->getRect();
     SDL_RenderFillRect(renderer, &rect);
 
     //draw text
@@ -41,9 +43,20 @@ void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Ob
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_int_distribution<Uint8> distr(0, 255);
-            objects.push_back(std::make_unique<Particle>(0, 30, 10, 10, 100, 0, 1, SDL_Color{distr(gen), distr(gen), distr(gen), 255}));
+
+            glm::vec2 particlePosition = glm::vec2(0, 30);
+            glm::vec2 particleSize = glm::vec2(10, 10);
+            glm::vec2 particleVelocity = glm::vec2(100, 0);
+            float particleMass = 1;
+            SDL_Color particleColor = SDL_Color{distr(gen), distr(gen), distr(gen), 255};
+
+            Particle particle(particlePosition, particleSize, particleVelocity, particleMass, particleColor); 
+
+            objects.push_back(std::make_unique<Particle>(particle));
         }
     }
+
+    SDL_FRect rect = this->getRect();
 
     if (event.type == SDL_EVENT_MOUSE_MOTION) {
         float mouseX;

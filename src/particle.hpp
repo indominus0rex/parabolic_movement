@@ -64,7 +64,7 @@ private:
 
 public:
     
-    Particle(float x, float y, float w, float h, float ux, float uy, float mass, SDL_Color color);
+    Particle(glm::vec2 position, glm::vec2 size, glm::vec2 velocity, float mass, SDL_Color color);
     
     ~Particle();
 
@@ -72,8 +72,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
     void onCollision(Window* window, Object* other) override;
 
+    glm::vec2 getVelocity() const { return velocity; }
     float getMomentum() const { return mass * glm::length(velocity); }
     float getMass() const { return mass; }
-    glm::vec2 getVelocity() const { return velocity; }
     void setMass(float new_mass) { mass = new_mass; }
 };

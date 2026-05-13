@@ -23,7 +23,7 @@ protected:
 public:
 
     Object() {}
-    Object(float x, float y, float w, float h, SDL_Color color, bool canCollide);
+    Object(glm::vec2 position, glm::vec2 size, SDL_Color color, bool canCollide);
 
     virtual ~Object() = default;
 

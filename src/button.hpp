@@ -7,16 +7,17 @@
 class Button : public Object {
 public:
 
-    SDL_FRect rect;
     SDL_Color baseColor;
     SDL_Color hoverColor;
     bool isHover;
     
     
-    Button(float x, float y, float w, float h, SDL_Color color);
+    Button(glm::vec2 position, glm::vec2 size, SDL_Color color);
 
     ~Button();
 
     void draw(SDL_Renderer* renderer) override;
     void handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) override;
+
+    SDL_FRect getRect() const { return {position.x, position.y, size.x, size.y}; }
 };
