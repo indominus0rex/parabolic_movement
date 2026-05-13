@@ -40,4 +40,11 @@ public:
     //setters
     void setMass(float mass) { this->mass = mass; }
     void setRadius(float radius) { this->radius = radius; }
+
+    static void createNewParticle(
+        Window* window, 
+        std::vector<std::unique_ptr<Object>> &objects, 
+        glm::vec2 launchVelocity, 
+        glm::vec2 launchPosition
+    );
 };

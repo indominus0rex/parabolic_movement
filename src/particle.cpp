@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
+#include <random>
 
 #include "particle.hpp"
 #include "window.hpp"
@@ -161,4 +162,20 @@ void Particle::onCollision(Window* window, Object* other) {
         this->calcNewVelocity(otherParticle);
         otherParticle->calcNewVelocity(this);
     }
+}
+
+void Particle::createNewParticle(Window* window, std::vector<std::unique_ptr<Object>> &objects, glm::vec2 launchVelocity, glm::vec2 launchPosition) {
+    float mass = 1;
+    float sizeX = 10;
+    float sizeY = 10;
+
+    glm::vec2 newSize = glm::vec2(sizeX, sizeY);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<Uint8> distr(0, 255);
+    SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
+
+    Particle particle(launchPosition, newSize, launchVelocity, mass, color);
+    objects.push_back(std::make_unique<Particle>(particle));
 }

@@ -51,25 +51,6 @@ protected:
         SDL_RenderGeometry(renderer, NULL, v, 7, indices, 9);
     }
 
-    void createNewParticle(Window* window, std::vector<std::unique_ptr<Object>> &objects) {
-        float velocityY = (endPosition.y - startPosition.y);
-        float velocityX = (endPosition.x - startPosition.x);
-        float mass = 1;
-        float sizeX = 10;
-        float sizeY = 10;
-
-        glm::vec2 newSize = glm::vec2(sizeX, sizeY);
-        glm::vec2 newVelocity = glm::vec2(velocityX, velocityY);
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<Uint8> distr(0, 255);
-        SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
-
-        Particle particle(startPosition, newSize, newVelocity, mass, color);
-        objects.push_back(std::make_unique<Particle>(particle));
-    }
-
 public:
 
     Slingshot();

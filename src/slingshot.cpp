@@ -7,6 +7,7 @@
 #include "interaction.hpp"
 #include "slingshot.hpp"
 #include "window.hpp"
+#include "physicsConfig.hpp"
 
 Slingshot::Slingshot() : mouseDown(false) {}
 
@@ -37,7 +38,13 @@ void Slingshot::handleEvents(Window* window, SDL_Event& event, std::vector<std::
     if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
         if (mouseDown) {
             mouseDown = false;
-            createNewParticle(window, objects);
+
+            glm::vec2 launchVelocity = {
+                (endPosition.x - startPosition.x) * PhysicsConfig::launchForceRatio,
+                (endPosition.y - startPosition.y) * PhysicsConfig::launchForceRatio
+            };
+
+            Particle::createNewParticle(window, objects, launchVelocity, startPosition);
         }
     }
 }
