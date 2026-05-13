@@ -15,10 +15,10 @@ private:
     glm::vec2 velocity;
     float mass;
     float radius;
-    float Cr = 1;
 
     void calcNewVelocity(Particle* other);
     void handleAABBCollision(Particle* other);
+    void drawCircle(SDL_Renderer* renderer);
 
 public:
     

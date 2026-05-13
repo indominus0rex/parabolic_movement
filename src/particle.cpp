@@ -5,6 +5,7 @@
 #include "particle.hpp"
 #include "window.hpp"
 #include "object.hpp"
+#include "physicsConfig.hpp"
 
 Particle::Particle(
     glm::vec2 position, 
@@ -33,7 +34,7 @@ Particle::Particle(
 Particle::~Particle() {}
 
 void Particle::calcNewVelocity(Particle* other) {
-    float mRatio = ((1 + Cr) * other->getMass()) / (mass + other->getMass());
+    float mRatio = ((1 + PhysicsConfig::Cr) * other->getMass()) / (mass + other->getMass());
 
     glm::vec2 vDiff = velocity - other->getVelocity();
     glm::vec2 xDiff = this->getCenter() - other->getCenter();
@@ -80,52 +81,65 @@ void Particle::handleAABBCollision(Particle* other) {
                 this->updatePosition(positionChanged);
             }
         }
+
+        this->calcNewVelocity(other);
+        other->calcNewVelocity(this);
     }
 }
 
 void Particle::update(Window* window, float deltaTime) {
-    const float gravity = 9.8f * 100;
-    // this->velocity.y += gravity * deltaTime;
+    this->velocity += PhysicsConfig::gravity * deltaTime;
     glm::vec2 positionChanged = velocity * deltaTime;
     this->updatePosition(positionChanged);
+
+    if (std::abs(this->velocity.x) < 0.1f) 
+        this->velocity.x = 0;
+    if (std::abs(this->velocity.y) < 0.1f)
+        this->velocity.y = 0;
 
     SDL_FRect boundingBox = this->getBoundingBox();
 
     //floor
     if (boundingBox.y + boundingBox.h / 2.0f > window->logHeight()) {
-        this->setCenter({ this->getCenter().x, window->logHeight() - boundingBox.h });
-        this->velocity.y *= -Cr;
+        this->setCenter({ this->getCenter().x, window->logHeight() - boundingBox.h / 2.0f });
+        this->velocity.y *= -PhysicsConfig::Cr;
     }
 
     //ceiling
     if (boundingBox.y - boundingBox.h / 2.0f < 0) {
         this->setCenter({ this->getCenter().x, boundingBox.h / 2.0f });
-        this->velocity.y *= -Cr;
+        this->velocity.y *= -PhysicsConfig::Cr;
     }
 
     //left wall
     if (boundingBox.x - boundingBox.w / 2.0f < 0) {
         this->setCenter({ boundingBox.w / 2.0f, this->getCenter().y });
-        this->velocity.x *= -Cr;
+        this->velocity.x *= -PhysicsConfig::Cr;
     }
 
     //right wall
     if (boundingBox.x + boundingBox.w / 2.0f > window->logWidth()) {
         this->setCenter({ (float) window->logWidth() - boundingBox.w / 2.0f, this->getCenter().y });
-        this->velocity.x *= -Cr;
+        this->velocity.x *= -PhysicsConfig::Cr;
     }
+}
+
+void Particle::drawCircle(SDL_Renderer* renderer) {
+
 }
 
 void Particle::draw(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
-    if (this->isCircle()) {
-
-    }
-    else if (this->isRect()) {
-        SDL_FRect currentRect = this->getRect();
-        SDL_RenderFillRect(renderer, &currentRect);
-    }
+    std::visit(Overload{
+        [&](const RectData& rect) {
+            SDL_FRect r = getRect();
+            SDL_RenderFillRect(renderer, &r);
+        },
+        [&](const CircleData& circle) {
+            drawCircle(renderer);
+        }
+    }, shapeData);
 }
 
 void Particle::onCollision(Window* window, Object* other) {

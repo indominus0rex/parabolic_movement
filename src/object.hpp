@@ -22,6 +22,9 @@ struct CircleData {
     float radius;
 };
 
+template<class... Ts> struct Overload : Ts... { using Ts::operator()...; };
+template<class... Ts> Overload(Ts...) -> Overload<Ts...>;
+
 class Object {
 protected:
 
