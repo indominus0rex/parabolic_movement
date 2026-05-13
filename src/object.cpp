@@ -36,7 +36,7 @@ void Object::setCenter(glm::vec2 newCenter) {
     std::visit([newCenter](auto&& arg) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, RectData>) {
-            arg.position = newCenter - (arg.size * 0.5f);
+            arg.position = newCenter;
         }
         else if constexpr (std::is_same_v<T, CircleData>) {
             arg.center = newCenter;
@@ -51,7 +51,7 @@ void Object::setRadius(float newRadius) {
 }
 
 glm::vec2 Object::getCenter() const {
-    std::visit([this](auto&& arg) {
+    return std::visit([](auto&& arg) -> glm::vec2 {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, RectData>) {
             return arg.position; 
@@ -65,8 +65,8 @@ glm::vec2 Object::getCenter() const {
 SDL_FRect Object::getRect() const {
     if (auto* rect = std::get_if<RectData>(&shapeData)) {
         SDL_FRect newRect = {
-            rect->position.x,
-            rect->position.y,
+            rect->position.x - rect->size.x / 2.0f,
+            rect->position.y - rect->size.y / 2.0f,
             rect->size.x,
             rect->size.y
         };
@@ -75,7 +75,7 @@ SDL_FRect Object::getRect() const {
 }
 
 void Object::updatePosition(glm::vec2 positionChanged) {
-    std::visit([positionChanged, this](auto&& arg){
+    std::visit([positionChanged](auto&& arg){
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, RectData>) {
             arg.position += positionChanged;

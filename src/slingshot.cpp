@@ -25,7 +25,13 @@ void Slingshot::handleEvents(Window* window, SDL_Event& event, std::vector<std::
     }
     
     if (event.type == SDL_EVENT_MOUSE_MOTION && mouseDown) {
-        endPosition = getMousePosition(window, event);
+        glm::vec2 mousePosition = getMousePosition(window, event);
+        glm::vec2 newEndPosition = { 
+            std::max(0.0f, std::min((float) window->logWidth(), mousePosition.x)),
+            std::max(0.0f, std::min((float) window->logHeight(), mousePosition.y))
+        };
+
+        endPosition = newEndPosition;
     }
 
     if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {

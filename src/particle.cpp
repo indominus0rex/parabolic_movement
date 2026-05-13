@@ -18,6 +18,18 @@ Particle::Particle(
     mass(mass)
 {}
 
+Particle::Particle(
+    glm::vec2 center,
+    float radius,
+    glm::vec2 velocity,
+    float mass,
+    SDL_Color color
+) :
+    Object(center, radius, color, true),
+    velocity(velocity),
+    mass(mass)
+{}
+
 Particle::~Particle() {}
 
 void Particle::calcNewVelocity(Particle* other) {
@@ -71,10 +83,6 @@ void Particle::handleAABBCollision(Particle* other) {
     }
 }
 
-void Particle::handleCircularCollision(Particle* other) {
-    
-}
-
 void Particle::update(Window* window, float deltaTime) {
     const float gravity = 9.8f * 100;
     // this->velocity.y += gravity * deltaTime;
@@ -84,35 +92,27 @@ void Particle::update(Window* window, float deltaTime) {
     SDL_FRect boundingBox = this->getBoundingBox();
 
     //floor
-    if (boundingBox.y + boundingBox.h > window->logHeight()) {
-        glm::vec2 newCenter = { this->getCenter().x, window->logHeight() - boundingBox.h };
-        this->setCenter(newCenter);
-        if (this->velocity.y)
-            this->velocity.y *= -Cr;
+    if (boundingBox.y + boundingBox.h / 2.0f > window->logHeight()) {
+        this->setCenter({ this->getCenter().x, window->logHeight() - boundingBox.h });
+        this->velocity.y *= -Cr;
     }
 
     //ceiling
-    if (boundingBox.y - boundingBox.h < 0) {
-        glm::vec2 newCenter = { this->getCenter().x, 0 };
-        this->setCenter(newCenter);
-        if (this->velocity.y)
-            this->velocity.y *= -Cr;
+    if (boundingBox.y - boundingBox.h / 2.0f < 0) {
+        this->setCenter({ this->getCenter().x, boundingBox.h / 2.0f });
+        this->velocity.y *= -Cr;
     }
 
     //left wall
-    if (boundingBox.x - boundingBox.w < 0) {
-        glm::vec2 newCenter = { 0, this->getCenter().y };
-        this->setCenter(newCenter);
-        if (this->velocity.x)
-            this->velocity.x *= -Cr;
+    if (boundingBox.x - boundingBox.w / 2.0f < 0) {
+        this->setCenter({ boundingBox.w / 2.0f, this->getCenter().y });
+        this->velocity.x *= -Cr;
     }
 
     //right wall
-    if (boundingBox.x + boundingBox.w > window->logWidth()) {
-        glm::vec2 newCenter = { window->logWidth() - boundingBox.w, this->getCenter().y }; 
-        this->setCenter(newCenter);
-        if (this->velocity.x)
-            this->velocity.x *= -Cr;
+    if (boundingBox.x + boundingBox.w / 2.0f > window->logWidth()) {
+        this->setCenter({ (float) window->logWidth() - boundingBox.w / 2.0f, this->getCenter().y });
+        this->velocity.x *= -Cr;
     }
 }
 
@@ -142,12 +142,7 @@ void Particle::onCollision(Window* window, Object* other) {
         glm::vec2 v1 = velocity;
         glm::vec2 v2 = otherParticle->getVelocity();
         
-        if (this->isRect()) {
-            handleAABBCollision(otherParticle);
-        }
-        else if (this->isCircle()) {
-            handleCircularCollision(otherParticle);
-        }
+        handleAABBCollision(otherParticle);
         
         this->calcNewVelocity(otherParticle);
         otherParticle->calcNewVelocity(this);

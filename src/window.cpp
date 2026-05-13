@@ -38,8 +38,13 @@ void Window::toggleFullscreen() {
     }
 }
 void Window::refreshRenderer(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
-    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
+
+    //background color
+    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    SDL_FRect activeArea = { 0, 0, (float) windowLogW, (float) windowLogH };
+    SDL_RenderFillRect(renderer, &activeArea);
 } 
 
 void Window::updateFrame() { SDL_RenderPresent(renderer); }

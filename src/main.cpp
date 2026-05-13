@@ -19,7 +19,6 @@ int main(int argc, char* argv[]) {
     Window* window = new Window("Title", 1280, 720, 640, 360, SDL_WINDOW_RESIZABLE);
 
     std::vector<std::unique_ptr<Object>> objects;
-    std::vector<std::unique_ptr<Object>> particles;
 
     Slingshot slingshot;
 
@@ -33,19 +32,18 @@ int main(int argc, char* argv[]) {
         prevTime = currentTime;
         
         std::vector<std::unique_ptr<Object>> newObjects;
-        std::vector<std::unique_ptr<Object>> newParticles;
 
         SDL_Event event;
         
         while (SDL_PollEvent(&event)) {
 
-            slingshot.handleEvents(window, event, newParticles);
+            slingshot.handleEvents(window, event, newObjects);
             
             for (auto& object : objects) {
                 Button* button = dynamic_cast<Button*>(object.get());
                 
                 if (button) {
-                    button->handleEvents(event, newParticles, window);
+                    button->handleEvents(event, newObjects, window);
                 }
             }
 
@@ -73,14 +71,6 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        //pushing new particle into particles
-        if (!newParticles.empty()) {
-            for (auto& particle : newParticles) {
-                particles.push_back(std::move(particle));
-            }
-            newParticles.clear();
-        }
-
         //pusing new object into object
         if (!newObjects.empty()) {
             for (auto& object : newObjects) {
@@ -93,31 +83,23 @@ int main(int argc, char* argv[]) {
         for (auto& object : objects) {
             object->update(window, deltaTime);
         }
-
-        for (auto& particle : particles) {
-            particle->update(window, deltaTime);
-        }
         
-        collisionManager::handleCollision(window, particles);
+        collisionManager::handleCollision(window, objects);
         
         //cleanup previous frame
-        window->refreshRenderer(20, 10, 30, 255);
-        
+        window->refreshRenderer(0, 0, 0, 255);
+
         //draw objects
         for (auto& object : objects) {
             object->draw(window->getRenderer());
         }
 
-        for (auto& particle : particles) {
-            particle->draw(window->getRenderer());
-        }
-
         //draw slingshot
         slingshot.draw(window->getRenderer());
 
-        //display time elapse
-        SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
-        SDL_RenderDebugText(window->getRenderer(), 10, 10, fmt::format("Current Time = {:.3f}s", currentTime).c_str());
+        // // display time elapse
+        // SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
+        // SDL_RenderDebugText(window->getRenderer(), 10, 10, fmt::format("Current Time = {:.3f}s", currentTime).c_str());
         
         //update frame
         window->updateFrame();

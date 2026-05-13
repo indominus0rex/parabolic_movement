@@ -15,16 +15,16 @@ private:
     glm::vec2 velocity;
     float mass;
     float radius;
-    float Cr = 0.8f;
+    float Cr = 1;
 
     void calcNewVelocity(Particle* other);
     void handleAABBCollision(Particle* other);
-    void handleCircularCollision(Particle* otherParticle);
 
 public:
     
     Particle(glm::vec2 position, glm::vec2 size, glm::vec2 velocity, float mass, SDL_Color color);
-    
+    Particle(glm::vec2 center, float radius, glm::vec2 velocity, float mass, SDL_Color color);
+
     ~Particle();
 
     void update(Window* window, float deltaTime) override;

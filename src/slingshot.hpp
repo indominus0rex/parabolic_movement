@@ -57,9 +57,7 @@ protected:
         float mass = 1;
         float sizeX = 10;
         float sizeY = 10;
-        float newPositionX = (startPosition.x - sizeX / 2);
-        float newPositionY = (startPosition.y - sizeY / 2);
-        glm::vec2 newPosition = glm::vec2(newPositionX, newPositionY);
+
         glm::vec2 newSize = glm::vec2(sizeX, sizeY);
         glm::vec2 newVelocity = glm::vec2(velocityX, velocityY);
 
@@ -68,7 +66,7 @@ protected:
         std::uniform_int_distribution<Uint8> distr(0, 255);
         SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
 
-        Particle particle(newPosition, newSize, newVelocity, mass, color);
+        Particle particle(startPosition, newSize, newVelocity, mass, color);
         objects.push_back(std::make_unique<Particle>(particle));
     }
 

@@ -8,12 +8,10 @@ private:
 
     SDL_Window* window;
     SDL_Renderer* renderer;
-
     int windowH;
     int windowW;
     int windowLogH;
     int windowLogW;
-
     bool isFullscreen;
 
 public:
