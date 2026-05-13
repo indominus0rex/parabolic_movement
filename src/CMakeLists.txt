@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
   window.cpp 
   object.cpp
   slingshot.cpp
+  interaction.cpp
 )
 
 include (FetchContent)

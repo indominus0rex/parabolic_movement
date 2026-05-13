@@ -21,6 +21,10 @@ private:
         return SDL_HasRectIntersectionFloat(&rectA, &rectB);
     }
 
+    static bool checkCircular(Object* a, Object* b) {
+        
+    }
+
 public:
 
     static void handleCollision(Window* window, std::vector<std::unique_ptr<Object>>& objects) {
@@ -36,11 +40,14 @@ public:
             for (auto& object : objects) {
                 std::vector<Object*> neighbors;
 
-                Bound seachArea = {object->getPosition().x - 10, 
-                                   object->getPosition().y - 10,
-                                   object->getSize().x + 20,
-                                   object->getSize().y + 20
-                                  };
+                SDL_FRect boundingBox = object->getBoundingBox();
+
+                Bound seachArea = {
+                    boundingBox.x - 10,
+                    boundingBox.y - 10,
+                    boundingBox.w + 20,
+                    boundingBox.h + 20
+                };
                 
                 quadtree.query(seachArea, neighbors);
                 for (Object* other : neighbors) {

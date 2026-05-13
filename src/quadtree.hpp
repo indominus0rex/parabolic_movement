@@ -44,7 +44,7 @@ public:
     }
 
     void insert(Object* particle) {
-        if (!bound.contains(particle->getPosition()))    
+        if (!bound.contains(particle->getCenter()))    
             return;
 
         if (particles.size() < capacity) {
@@ -67,7 +67,7 @@ public:
             return;
         
         for (auto particle : particles) {
-            if (range.contains(particle->getPosition()))
+            if (range.contains(particle->getCenter()))
                 found.push_back(particle);
         }
 
