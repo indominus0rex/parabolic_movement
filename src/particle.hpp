@@ -15,9 +15,11 @@ private:
     
     glm::vec2 velocity;
     float mass;
+    bool stuck;
 
     void calcNewVelocity(Particle* other);
-    void handleAABBCollision(Particle* other);
+    void handleAABBCollision(Window* window, Particle* other);
+    void resolveCollision(Window* window, Particle* other);
     void drawCircle(SDL_Renderer* renderer);
 
 public:
@@ -36,6 +38,7 @@ public:
     float getMomentum() const { return mass * glm::length(velocity); }
     float getMass() const { return mass; }
     float getRadius() const;
+    bool isStuck() const { return stuck; }
     
     //setters
     void setMass(float mass) { this->mass = mass; }

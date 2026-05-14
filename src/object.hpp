@@ -22,18 +22,21 @@ struct CircleData {
     float radius;
 };
 
-template<class... Ts> struct Overload : Ts... { using Ts::operator()...; };
-template<class... Ts> Overload(Ts...) -> Overload<Ts...>;
 
 class Object {
-protected:
-
+    protected:
+    
     SDL_Color color;
     bool canCollide;
     ObjectType objectType;
     std::variant<RectData, CircleData> shapeData;
-
+    
 public:
+
+    template<class... Ts> struct Overload : Ts... { using Ts::operator()...; };
+    template<class... Ts> Overload(Ts...) -> Overload<Ts...>;
+    template<typename T> 
+    auto applyVisitor(T&& visitor) const { return std::visit(std::forward<T>(visitor), shapeData); }
 
     Object(glm::vec2 position, glm::vec2 size, SDL_Color color, bool canCollide);
     Object(glm::vec2 center, float radius, SDL_Color color, bool canCollide);

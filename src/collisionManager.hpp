@@ -12,10 +12,11 @@
 #include "particle.hpp"
 #include "quadtree.hpp"
 
-class collisionManager {
+class collisionManager : public Object {
 private:
 
     static bool checkAABB(Object* a, Object* b);
+    static bool checkCircleRect(const CircleData& circle, const RectData& rect);
 
 public:
 

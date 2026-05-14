@@ -17,7 +17,8 @@ Particle::Particle(
 ) : 
     Object(position, size, color, true), 
     velocity(velocity), 
-    mass(mass)
+    mass(mass),
+    stuck(false)
 {}
 
 Particle::Particle(
@@ -29,10 +30,20 @@ Particle::Particle(
 ) :
     Object(center, radius, color, true),
     velocity(velocity),
-    mass(mass)
+    mass(mass),
+    stuck(false)
 {}
 
 Particle::~Particle() {}
+
+void Particle::resolveCollision(Window* window, Particle* other) {
+    glm::vec2 relativeVelocity = this->getVelocity() - other->getVelocity();
+    glm::vec2 relativePosition = this->getCenter() - other->getCenter();
+
+    if (glm::dot(relativeVelocity, relativePosition) >= 0) {
+        return;
+    }
+}
 
 void Particle::calcNewVelocity(Particle* other) {
     float mRatio = ((1 + PhysicsConfig::Cr) * other->getMass()) / (mass + other->getMass());
@@ -47,45 +58,67 @@ void Particle::calcNewVelocity(Particle* other) {
     velocity = newVelocity;
 }
 
-void Particle::handleAABBCollision(Particle* other) {
-    float centerAX = this->getCenter().x;
-    float centerAY = this->getCenter().y;
-    float centerBX = other->getCenter().x;
-    float centerBY = other->getCenter().y;
+void Particle::handleAABBCollision(Window* window, Particle* other) {
+    std::visit(Overload{
+        [&](const RectData& rect) {
+            float centerAX = this->getCenter().x;
+            float centerAY = this->getCenter().y;
+            float centerBX = other->getCenter().x;
+            float centerBY = other->getCenter().y;
 
-    float dx = centerAX - centerBX;
-    float dy = centerAY - centerBY;
+            float dx = centerAX - centerBX;
+            float dy = centerAY - centerBY;
 
-    float combinedHalfW = (this->getRect().w + other->getRect().w) / 2.0f;
-    float combinedHalfH = (this->getRect().h + other->getRect().h) / 2.0f;
+            float combinedHalfW = (this->getRect().w + other->getRect().w) / 2.0f;
+            float combinedHalfH = (this->getRect().h + other->getRect().h) / 2.0f;
 
-    float overlapX = combinedHalfW - std::abs(dx);
-    float overlapY = combinedHalfH - std::abs(dy);
+            float overlapX = combinedHalfW - std::abs(dx);
+            float overlapY = combinedHalfH - std::abs(dy);
 
-    if (overlapX > 0 && overlapY > 0) {
-        if (overlapX < overlapY) {
-            if (dx > 0) {
-                glm::vec2 positionChanged = { overlapX, 0 };
-                this->updatePosition(positionChanged);
+            if (overlapX > 0 && overlapY > 0) {
+                if (overlapX < overlapY) {
+                    if (dx > 0) {
+                        glm::vec2 positionChanged = { overlapX, 0 };
+                        this->updatePosition(positionChanged);
+                    }
+                    else {
+                        glm::vec2 positionChanged = { -overlapX, 0 };
+                        this->updatePosition(positionChanged);
+                    }        
+                } else {
+                    if (dy > 0) {
+                        glm::vec2 positionChanged = { 0, overlapY };
+                        this->updatePosition(positionChanged);
+                    }
+                    else {
+                        glm::vec2 positionChanged = { 0, -overlapY };
+                        this->updatePosition(positionChanged);
+                    }
+                }
+
+                this->calcNewVelocity(other);
+                other->calcNewVelocity(this);
             }
-            else {
-                glm::vec2 positionChanged = { -overlapX, 0 };
-                this->updatePosition(positionChanged);
-            }        
-        } else {
-            if (dy > 0) {
-                glm::vec2 positionChanged = { 0, overlapY };
-                this->updatePosition(positionChanged);
-            }
-            else {
-                glm::vec2 positionChanged = { 0, -overlapY };
-                this->updatePosition(positionChanged);
-            }
+        },
+        [&](const CircleData& circle) {
+            glm::vec2 centerA = this->getCenter();
+            glm::vec2 centerB = other->getCenter();
+            
+            float distAB = glm::distance(centerA, centerB);
+            float combinedRadius = this->getRadius() + other->getRadius();
+            
+            float overlap = combinedRadius - distAB;
+
+            glm::vec2 unitVec = (centerA - centerB) / distAB;
+            glm::vec2 pushForce = unitVec * (overlap / 2.0f);
+
+            this->updatePosition(pushForce);
+            other->updatePosition(-pushForce);
+
+            this->calcNewVelocity(other);
+            other->calcNewVelocity(this);
         }
-
-        this->calcNewVelocity(other);
-        other->calcNewVelocity(this);
-    }
+    }, shapeData);
 }
 
 void Particle::update(Window* window, float deltaTime) {
@@ -100,50 +133,66 @@ void Particle::update(Window* window, float deltaTime) {
             //floor
             if (boundingBox.y + boundingBox.h / 2.0f > window->logHeight()) {
                 this->setCenter({ this->getCenter().x, window->logHeight() - boundingBox.h / 2.0f });
-                this->velocity.y *= -PhysicsConfig::Cr;
+                if (this->velocity.y > 0) {
+                    this->velocity.y *= -PhysicsConfig::Cr;
+                }
             }
 
             //ceiling
             if (boundingBox.y - boundingBox.h / 2.0f < 0) {
                 this->setCenter({ this->getCenter().x, boundingBox.h / 2.0f });
-                this->velocity.y *= -PhysicsConfig::Cr;
+                if (this->velocity.y < 0) {
+                    this->velocity.y *= -PhysicsConfig::Cr;
+                } 
             }
 
             //left wall
             if (boundingBox.x - boundingBox.w / 2.0f < 0) {
                 this->setCenter({ boundingBox.w / 2.0f, this->getCenter().y });
-                this->velocity.x *= -PhysicsConfig::Cr;
+                if (this->velocity.x < 0) {
+                    this->velocity.x *= -PhysicsConfig::Cr;
+                }
             }
 
             //right wall
             if (boundingBox.x + boundingBox.w / 2.0f > window->logWidth()) {
                 this->setCenter({ (float) window->logWidth() - boundingBox.w / 2.0f, this->getCenter().y });
-                this->velocity.x *= -PhysicsConfig::Cr;
+                if (this->velocity.x > 0) {
+                    this->velocity.x *= -PhysicsConfig::Cr;
+                }
             }
         },
         [&](const CircleData& circle) {
             //left wall
             if (circle.center.x - circle.radius < 0) {
                 this->setCenter({ circle.radius, circle.center.y });
-                this->velocity.x *= -PhysicsConfig::Cr;
+                if (this->velocity.x < 0) {
+                    this->velocity.x *= -PhysicsConfig::Cr;
+                }
             }
 
             //right wall
             if (circle.center.x + circle.radius > window->logWidth()) {
                 this->setCenter({ (float) window->logWidth() - circle.radius, circle.center.y });
-                this->velocity.x *= -PhysicsConfig::Cr;
+                if (this->velocity.x > 0) {
+                    this->velocity.x *= -PhysicsConfig::Cr;
+                }
             }
 
             //ceiling
             if (circle.center.y - circle.radius < 0) {
                 this->setCenter({ circle.center.x, circle.radius });
-                this->velocity.y *= -PhysicsConfig::Cr;
+                if (this->velocity.y < 0) {
+                    this->velocity.y *= -PhysicsConfig::Cr;
+                }
             }
 
             //floor
             if (circle.center.y + circle.radius > window->logHeight()) {
                 this->setCenter({ circle.center.x, (float) window->logHeight() - circle.radius });
-                this->velocity.y *= -PhysicsConfig::Cr;
+                if (this->velocity.y > 0) {
+                    this->velocity.y *= -PhysicsConfig::Cr;
+                }
             }
         }
     }, shapeData);
@@ -204,7 +253,6 @@ void Particle::draw(SDL_Renderer* renderer) {
 }
 
 void Particle::onCollision(Window* window, Object* other) {
-    //hit another particle
     if (other->getType() == ObjectType::PARTICLE) {
         Particle* otherParticle = static_cast<Particle*>(other);
 
@@ -217,7 +265,8 @@ void Particle::onCollision(Window* window, Object* other) {
         glm::vec2 v1 = velocity;
         glm::vec2 v2 = otherParticle->getVelocity();
         
-        handleAABBCollision(otherParticle);
+        handleAABBCollision(window, otherParticle);
+        resolveCollision(window, otherParticle);
         
         this->calcNewVelocity(otherParticle);
         otherParticle->calcNewVelocity(this);
