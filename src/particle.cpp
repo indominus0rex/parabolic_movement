@@ -93,40 +93,100 @@ void Particle::update(Window* window, float deltaTime) {
     glm::vec2 positionChanged = velocity * deltaTime;
     this->updatePosition(positionChanged);
 
-    if (std::abs(this->velocity.x) < 0.1f) 
-        this->velocity.x = 0;
-    if (std::abs(this->velocity.y) < 0.1f)
-        this->velocity.y = 0;
+    std::visit(Overload{
+        [&](const RectData& rect) {
+            SDL_FRect boundingBox = this->getBoundingBox();
 
-    SDL_FRect boundingBox = this->getBoundingBox();
+            //floor
+            if (boundingBox.y + boundingBox.h / 2.0f > window->logHeight()) {
+                this->setCenter({ this->getCenter().x, window->logHeight() - boundingBox.h / 2.0f });
+                this->velocity.y *= -PhysicsConfig::Cr;
+            }
 
-    //floor
-    if (boundingBox.y + boundingBox.h / 2.0f > window->logHeight()) {
-        this->setCenter({ this->getCenter().x, window->logHeight() - boundingBox.h / 2.0f });
-        this->velocity.y *= -PhysicsConfig::Cr;
-    }
+            //ceiling
+            if (boundingBox.y - boundingBox.h / 2.0f < 0) {
+                this->setCenter({ this->getCenter().x, boundingBox.h / 2.0f });
+                this->velocity.y *= -PhysicsConfig::Cr;
+            }
 
-    //ceiling
-    if (boundingBox.y - boundingBox.h / 2.0f < 0) {
-        this->setCenter({ this->getCenter().x, boundingBox.h / 2.0f });
-        this->velocity.y *= -PhysicsConfig::Cr;
-    }
+            //left wall
+            if (boundingBox.x - boundingBox.w / 2.0f < 0) {
+                this->setCenter({ boundingBox.w / 2.0f, this->getCenter().y });
+                this->velocity.x *= -PhysicsConfig::Cr;
+            }
 
-    //left wall
-    if (boundingBox.x - boundingBox.w / 2.0f < 0) {
-        this->setCenter({ boundingBox.w / 2.0f, this->getCenter().y });
-        this->velocity.x *= -PhysicsConfig::Cr;
-    }
+            //right wall
+            if (boundingBox.x + boundingBox.w / 2.0f > window->logWidth()) {
+                this->setCenter({ (float) window->logWidth() - boundingBox.w / 2.0f, this->getCenter().y });
+                this->velocity.x *= -PhysicsConfig::Cr;
+            }
+        },
+        [&](const CircleData& circle) {
+            //left wall
+            if (circle.center.x - circle.radius < 0) {
+                this->setCenter({ circle.radius, circle.center.y });
+                this->velocity.x *= -PhysicsConfig::Cr;
+            }
 
-    //right wall
-    if (boundingBox.x + boundingBox.w / 2.0f > window->logWidth()) {
-        this->setCenter({ (float) window->logWidth() - boundingBox.w / 2.0f, this->getCenter().y });
-        this->velocity.x *= -PhysicsConfig::Cr;
-    }
+            //right wall
+            if (circle.center.x + circle.radius > window->logWidth()) {
+                this->setCenter({ (float) window->logWidth() - circle.radius, circle.center.y });
+                this->velocity.x *= -PhysicsConfig::Cr;
+            }
+
+            //ceiling
+            if (circle.center.y - circle.radius < 0) {
+                this->setCenter({ circle.center.x, circle.radius });
+                this->velocity.y *= -PhysicsConfig::Cr;
+            }
+
+            //floor
+            if (circle.center.y + circle.radius > window->logHeight()) {
+                this->setCenter({ circle.center.x, (float) window->logHeight() - circle.radius });
+                this->velocity.y *= -PhysicsConfig::Cr;
+            }
+        }
+    }, shapeData);
 }
 
 void Particle::drawCircle(SDL_Renderer* renderer) {
+    if (!this->isCircle())
+        return;
 
+    int x = (int) this->getRadius();
+    int y = 0;
+    int error = 1 - x;
+    float centerX = this->getCenter().x;
+    float centerY = this->getCenter().y;
+    
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        
+    while (x >= y) {
+        
+        SDL_RenderLine(renderer, centerX - x, centerY + y, centerX + x, centerY + y);
+        SDL_RenderLine(renderer, centerX - x, centerY - y, centerX + x, centerY - y);
+        SDL_RenderLine(renderer, centerX - y, centerY + x, centerX + y, centerY + x);
+        SDL_RenderLine(renderer, centerX - y, centerY - x, centerX + y, centerY - x);
+
+        SDL_RenderPoint(renderer, centerX + x, centerY + y);
+        SDL_RenderPoint(renderer, centerX + x, centerY - y);
+        SDL_RenderPoint(renderer, centerX - x, centerY + y);
+        SDL_RenderPoint(renderer, centerX - x, centerY - y);
+        SDL_RenderPoint(renderer, centerX + y, centerY + x);
+        SDL_RenderPoint(renderer, centerX + y, centerY - x);
+        SDL_RenderPoint(renderer, centerX - y, centerY + x);
+        SDL_RenderPoint(renderer, centerX - y, centerY - x);
+    
+        y++;
+
+        if (error < 0) {
+            error += 2 * y + 1;
+        }
+        else {
+            x--;
+            error += 2 * (y - x) + 1;
+        }
+    }
 }
 
 void Particle::draw(SDL_Renderer* renderer) {
@@ -164,18 +224,14 @@ void Particle::onCollision(Window* window, Object* other) {
     }
 }
 
-void Particle::createNewParticle(Window* window, std::vector<std::unique_ptr<Object>> &objects, glm::vec2 launchVelocity, glm::vec2 launchPosition) {
-    float mass = 1;
-    float sizeX = 10;
-    float sizeY = 10;
+float Particle::getRadius() const {
+    if (auto* circle = std::get_if<CircleData>(&shapeData)) {
+        return circle->radius;
+    }
+}
 
-    glm::vec2 newSize = glm::vec2(sizeX, sizeY);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<Uint8> distr(0, 255);
-    SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
-
-    Particle particle(launchPosition, newSize, launchVelocity, mass, color);
-    objects.push_back(std::make_unique<Particle>(particle));
+void Particle::setRadius(float radius) {
+    if (auto* circle = std::get_if<CircleData>(&shapeData)) {
+        circle->radius = radius; 
+    }
 }
