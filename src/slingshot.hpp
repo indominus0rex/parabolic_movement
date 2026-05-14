@@ -14,7 +14,7 @@ protected:
 
     glm::vec2 startPosition;
     glm::vec2 endPosition;
-    bool mouseDown;
+    bool mouseDown = false;
     const glm::vec2 defaultMousePosition = glm::vec2(-1, -1);
 
     void drawArrow(SDL_Renderer* renderer, glm::vec2 start, glm::vec2 end, float thickness, float headSize);

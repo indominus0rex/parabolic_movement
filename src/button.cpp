@@ -9,15 +9,15 @@
 #include "particle.hpp"
 #include "window.hpp"
 
-Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color) : 
-    Interaction(), Object(position, size, color, false) {
+Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color, std::function<void()> callback) : 
+    Object(position, size, color, false), onClick(callback) {
     hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
 }
 
 Button::~Button() {}
 
 void Button::draw(SDL_Renderer* renderer) {
-    if (isHover) 
+    if (this->isHovered) 
         SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
     else 
         SDL_SetRenderDrawColor(renderer, baseColor.r, baseColor.g, baseColor.b, baseColor.a);
@@ -39,31 +39,21 @@ void Button::draw(SDL_Renderer* renderer) {
 
 void Button::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-        if (isHover) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<Uint8> distr(0, 255);
-
-            glm::vec2 particlePosition = glm::vec2(0, 30);
-            glm::vec2 particleSize = glm::vec2(10, 10);
-            glm::vec2 particleVelocity = glm::vec2(100, 0);
-            float particleMass = 1;
-            SDL_Color particleColor = SDL_Color{distr(gen), distr(gen), distr(gen), 255};
-
-            Particle particle(particlePosition, particleSize, particleVelocity, particleMass, particleColor); 
-
-            objects.push_back(std::make_unique<Particle>(particle));
+        if (this->isHovered) {
+            this->onClick();
         }
     }
 
     SDL_FRect rect = this->getRect();
 
     if (event.type == SDL_EVENT_MOUSE_MOTION) {
-        float mouseX;
-        float mouseY;
+        glm::vec2 mousePosition = getMousePosition(window, event);
 
-        SDL_RenderCoordinatesFromWindow(window->getRenderer(), event.button.x, event.button.y, &mouseX, &mouseY);
-
-        isHover = rect.x <= mouseX && mouseX <= rect.x + rect.w && rect.y <= mouseY && mouseY <= rect.y + rect.h;
+        this->isHovered = (
+            rect.x <= mousePosition.x 
+            && mousePosition.x <= rect.x + rect.w 
+            && rect.y <= mousePosition.y 
+            && mousePosition.y <= rect.y + rect.h
+        );
     }
 }

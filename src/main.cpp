@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <memory>
 
-#include "window.hpp"
 #include "button.hpp"
-#include "particle.hpp"
-#include "collisionManager.hpp"
 #include "slingshot.hpp"
+#include "interaction.hpp"
+#include "object.hpp"
+#include "window.hpp"
+#include "collisionManager.hpp"
 
 int main(int argc, char* argv[]) {
 
@@ -21,8 +22,17 @@ int main(int argc, char* argv[]) {
     std::vector<std::unique_ptr<Object>> objects;
     std::vector<std::unique_ptr<Interaction>> interactables;
 
-    interactables.push_back(std::make_unique<Slingshot>());
+    //add slingshot
+    // interactables.push_back(std::make_unique<Slingshot>());
 
+    Slingshot slingshot;
+
+    //add inputmode button
+    interactables.push_back(std::make_unique<Button>(glm::vec2(50, 50), glm::vec2(50, 50), SDL_Color{255, 255, 255, 255}, []() {
+        std::cout << "hello world\n";
+    }));
+
+    bool mouseOverInteractables = false;
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
     
@@ -40,7 +50,17 @@ int main(int argc, char* argv[]) {
 
             for (auto& interactable : interactables) {
                 interactable->handleEvents(window, event, newObjects);
+
+                if (interactable->getIsHovered()) {
+                    mouseOverInteractables = true;
+                }
             }
+
+            if (!mouseOverInteractables) {
+                slingshot.handleEvents(window, event, newObjects);
+            }
+
+            mouseOverInteractables = false;
 
             switch(event.type) {
                 case SDL_EVENT_QUIT: {
@@ -83,7 +103,7 @@ int main(int argc, char* argv[]) {
         for (auto& interactable : interactables) {
             interactable->update(window, deltaTime);
         }
-        
+
         //handle object collisions
         collisionManager::handleCollision(window, objects);
         
@@ -99,6 +119,9 @@ int main(int argc, char* argv[]) {
         for (auto& interactable : interactables) {
             interactable->draw(window->getRenderer());
         }
+
+        //draw slingshot
+        slingshot.draw(window->getRenderer());
 
         // // display time elapse
         // SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);

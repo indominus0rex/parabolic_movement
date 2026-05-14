@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <functional>
 
 #include "object.hpp"
 #include "interaction.hpp"
@@ -10,12 +11,13 @@ protected:
     
     SDL_Color baseColor;
     SDL_Color hoverColor;
-    bool isHover;
 
 public:
 
-    
-    Button(glm::vec2 position, glm::vec2 size, SDL_Color color);
+
+    std::function<void()> onClick;
+
+    Button(glm::vec2 position, glm::vec2 size, SDL_Color color, std::function<void()> callback);
 
     ~Button();
 
