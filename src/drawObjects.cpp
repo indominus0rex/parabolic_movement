@@ -7,8 +7,18 @@
 #include "window.hpp"
 #include "object.hpp"
 
-void DrawObjects::draw(SDL_Renderer* renderer) {
+DrawObjects::DrawObjects() : Object() {}
 
+void DrawObjects::draw(SDL_Renderer* renderer) {
+    std::visit(Overload{
+        [&](DrawObjectRectData& rect) {
+            SDL_FRect newRect = rect.getRect();
+            SDL_RenderFillRect(renderer, &newRect);
+        },
+        [&](DrawObjectLineData& line) {
+            SDL_RenderLines(renderer, (SDL_FPoint*) line.vertices.data(), (int) line.vertices.size());
+        }
+    }, drawData);
 }  
 
 void DrawObjects::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
@@ -39,14 +49,6 @@ void DrawObjects::handleEvents(Window* window, SDL_Event& event, std::vector<std
 
     if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && mouseDown) {
         mouseDown = false;
-        std::visit(Overload{
-            [&](DrawObjectRectData& rect) {
-                SDL_FRect newRect = rect.getRect();
-                SDL_RenderFillRect(window->getRenderer(), &newRect);
-            },
-            [&](DrawObjectLineData& line) {
-                SDL_RenderLines(window->getRenderer(), (SDL_FPoint* ) line.vertices.data(), (int) line.vertices.size());
-            }
-        }, drawData);
+        this->setCanCollide(true);
     }
 }

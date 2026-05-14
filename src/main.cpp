@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "drawObjects.hpp"
 #include "button.hpp"
 #include "slingshot.hpp"
 #include "interaction.hpp"
@@ -21,14 +22,16 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::unique_ptr<Object>> objects;
     std::vector<std::unique_ptr<Interaction>> interactables;
+    std::vector<std::unique_ptr<Interaction>> mechanics;
 
     //add slingshot
-    // interactables.push_back(std::make_unique<Slingshot>());
+    mechanics.push_back(std::make_unique<Slingshot>());
 
-    Slingshot slingshot;
+    //add drawobject
+    mechanics.push_back(std::make_unique<DrawObjects>());
 
     //add inputmode button
-    interactables.push_back(std::make_unique<Button>(glm::vec2(50, 50), glm::vec2(50, 50), SDL_Color{255, 255, 255, 255}, []() {
+    interactables.push_back(std::make_unique<Button>(glm::vec2(20, 20), glm::vec2(50, 20), SDL_Color{150, 150, 150, 255}, []() {
         std::cout << "hello world\n";
     }));
 
@@ -57,7 +60,9 @@ int main(int argc, char* argv[]) {
             }
 
             if (!mouseOverInteractables) {
-                slingshot.handleEvents(window, event, newObjects);
+                for (auto& mechanic : mechanics) {
+                    mechanic->handleEvents(window, event, objects);
+                }
             }
 
             mouseOverInteractables = false;
@@ -120,8 +125,23 @@ int main(int argc, char* argv[]) {
             interactable->draw(window->getRenderer());
         }
 
-        //draw slingshot
-        slingshot.draw(window->getRenderer());
+        //draw mechanics
+        for (auto& mechanic : mechanics) {
+            mechanic->draw(window->getRenderer());
+
+            //TODO fix this
+            if (DrawObjects* a = static_cast<DrawObjects*>(mechanic.get())) {
+                SDL_RenderDebugText(window->getRenderer(), 80, 20, fmt::format("CURRENT INPUTMODE : {}", [&]() -> std::string {
+                    InputMode b = a->getInputMode();
+                    if (b == InputMode::SHOOT) {
+                        return "SHOOT";
+                    }
+                    else if (b == InputMode::DRAW) {
+                        return "DRAW";
+                    }
+                }).c_str());
+            }
+        }
 
         // // display time elapse
         // SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);

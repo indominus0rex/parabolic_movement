@@ -12,9 +12,6 @@ protected:
     bool isHovered = false;
 public:
 
-    template<class... Ts> struct Overload : Ts... { using Ts::operator()...; };
-    template<class... Ts> Overload(Ts...) -> Overload<Ts...>;
-
     virtual ~Interaction() {}
     
     virtual void update(Window* window, float deltaTime) {}

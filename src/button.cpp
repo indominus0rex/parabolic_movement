@@ -11,8 +11,13 @@
 
 Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color, std::function<void()> callback) : 
     Object(position, size, color, false), onClick(callback) {
-    hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
-}
+        this->hoverColor = {
+            Uint8(color.r + 20),
+            Uint8(color.g + 20),
+            Uint8(color.b + 20),
+            Uint8(color.a)
+        };
+    }
 
 Button::~Button() {}
 
@@ -20,7 +25,7 @@ void Button::draw(SDL_Renderer* renderer) {
     if (this->isHovered) 
         SDL_SetRenderDrawColor(renderer, hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a);
     else 
-        SDL_SetRenderDrawColor(renderer, baseColor.r, baseColor.g, baseColor.b, baseColor.a);
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
     SDL_FRect rect = this->getRect();
     SDL_RenderFillRect(renderer, &rect);

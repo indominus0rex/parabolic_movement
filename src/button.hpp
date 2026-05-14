@@ -9,7 +9,6 @@
 class Button : public Interaction, Object {
 protected:
     
-    SDL_Color baseColor;
     SDL_Color hoverColor;
 
 public:

@@ -38,6 +38,7 @@ public:
     template<typename T> 
     auto applyVisitor(T&& visitor) const { return std::visit(std::forward<T>(visitor), shapeData); }
 
+    Object() {}
     Object(glm::vec2 position, glm::vec2 size, SDL_Color color, bool canCollide);
     Object(glm::vec2 center, float radius, SDL_Color color, bool canCollide);
 
@@ -62,4 +63,5 @@ public:
     void updatePosition(glm::vec2 positionChanged); 
     void setCenter(glm::vec2 newCenter);
     void setRadius(float newRadius);
+    void setCanCollide(bool canCollide);
 };

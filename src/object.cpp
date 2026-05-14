@@ -85,3 +85,7 @@ void Object::updatePosition(glm::vec2 positionChanged) {
         }
     }, shapeData);
 }
+
+void Object::setCanCollide(bool canCollide) {
+    this->canCollide = canCollide;
+}

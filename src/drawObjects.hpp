@@ -36,7 +36,7 @@ struct DrawObjectLineData {
     SDL_Color color;
 };
 
-class DrawObjects : public Interaction {
+class DrawObjects : public Interaction, Object {
 protected:
 
     InputMode currentMode = InputMode::SHOOT;
@@ -45,7 +45,10 @@ protected:
 
 public:
 
+    DrawObjects();
+
     void draw(SDL_Renderer* renderer) override;
     void handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) override;
 
+    InputMode getInputMode() const { return currentMode; }
 };
