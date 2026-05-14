@@ -11,7 +11,7 @@ void DrawObjects::draw(SDL_Renderer* renderer) {
 
 }  
 
-void DrawObjects::handleEvents(Window* window, SDL_Event& event) {
+void DrawObjects::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && currentMode == InputMode::DRAW) {
         mouseDown = true;
         std::visit(Overload{

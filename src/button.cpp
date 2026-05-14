@@ -10,7 +10,7 @@
 #include "window.hpp"
 
 Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color) : 
-    Object(position, size, color, false), baseColor(color) {
+    Interaction(), Object(position, size, color, false) {
     hoverColor = { (Uint8)(color.r + 20), (Uint8)(color.g + 20), (Uint8)(color.b + 20), 255 };
 }
 
@@ -37,7 +37,7 @@ void Button::draw(SDL_Renderer* renderer) {
     SDL_RenderDebugText(renderer, textX, textY, "SPAWN");
 }
 
-void Button::handleEvents(const SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects, Window* window) {
+void Button::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         if (isHover) {
             std::random_device rd;

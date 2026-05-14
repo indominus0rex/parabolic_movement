@@ -19,8 +19,9 @@ int main(int argc, char* argv[]) {
     Window* window = new Window("Title", 1280, 720, 640, 360, SDL_WINDOW_RESIZABLE);
 
     std::vector<std::unique_ptr<Object>> objects;
+    std::vector<std::unique_ptr<Interaction>> interactables;
 
-    Slingshot slingshot;
+    interactables.push_back(std::make_unique<Slingshot>());
 
     bool running = true;
     float prevTime = SDL_GetTicks() / 1000.0f;
@@ -37,14 +38,8 @@ int main(int argc, char* argv[]) {
         
         while (SDL_PollEvent(&event)) {
 
-            slingshot.handleEvents(window, event, newObjects);
-            
-            for (auto& object : objects) {
-                Button* button = dynamic_cast<Button*>(object.get());
-                
-                if (button) {
-                    button->handleEvents(event, newObjects, window);
-                }
+            for (auto& interactable : interactables) {
+                interactable->handleEvents(window, event, newObjects);
             }
 
             switch(event.type) {
@@ -83,7 +78,13 @@ int main(int argc, char* argv[]) {
         for (auto& object : objects) {
             object->update(window, deltaTime);
         }
+
+        //update interactables
+        for (auto& interactable : interactables) {
+            interactable->update(window, deltaTime);
+        }
         
+        //handle object collisions
         collisionManager::handleCollision(window, objects);
         
         //cleanup previous frame
@@ -94,8 +95,10 @@ int main(int argc, char* argv[]) {
             object->draw(window->getRenderer());
         }
 
-        //draw slingshot
-        slingshot.draw(window->getRenderer());
+        //draw interactables
+        for (auto& interactable : interactables) {
+            interactable->draw(window->getRenderer());
+        }
 
         // // display time elapse
         // SDL_SetRenderDrawColor(window->getRenderer(), 255, 255, 255, 255);
