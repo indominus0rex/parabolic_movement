@@ -72,6 +72,8 @@ SDL_FRect Object::getRect() const {
         };
         return newRect;
     }
+
+    return {};
 }
 
 void Object::updatePosition(glm::vec2 positionChanged) {

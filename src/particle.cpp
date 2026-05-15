@@ -277,6 +277,8 @@ float Particle::getRadius() const {
     if (auto* circle = std::get_if<CircleData>(&shapeData)) {
         return circle->radius;
     }
+
+    return 0.0f;
 }
 
 void Particle::setRadius(float radius) {
