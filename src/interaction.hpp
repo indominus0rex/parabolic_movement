@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <variant>
+#include <string>
 
 #include "window.hpp"
 #include "object.hpp"
@@ -17,6 +18,7 @@ public:
     virtual void update(Window* window, float deltaTime) {}
     virtual void draw(SDL_Renderer* renderer) = 0;
     virtual void handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) = 0;
+    virtual std::string getInputModeText() {}
 
     bool getIsHovered() const { return isHovered; }
     glm::vec2 getMousePosition(Window* window, SDL_Event& event);

@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     mechanics.push_back(std::make_unique<DrawObjects>());
 
     //add inputmode button
-    interactables.push_back(std::make_unique<Button>(glm::vec2(20, 20), glm::vec2(50, 20), SDL_Color{150, 150, 150, 255}, []() {
+    interactables.push_back(std::make_unique<Button>(glm::vec2(50, 20), glm::vec2(50, 20), SDL_Color{150, 150, 150, 255}, []() {
         std::cout << "hello world\n";
     }));
 
@@ -130,16 +130,9 @@ int main(int argc, char* argv[]) {
             mechanic->draw(window->getRenderer());
 
             //TODO fix this
-            if (DrawObjects* a = static_cast<DrawObjects*>(mechanic.get())) {
-                SDL_RenderDebugText(window->getRenderer(), 80, 20, fmt::format("CURRENT INPUTMODE : {}", [&]() -> std::string {
-                    InputMode b = a->getInputMode();
-                    if (b == InputMode::SHOOT) {
-                        return "SHOOT";
-                    }
-                    else if (b == InputMode::DRAW) {
-                        return "DRAW";
-                    }
-                }).c_str());
+            if (auto* a = dynamic_cast<DrawObjects*>(mechanic.get())) {
+                std::string currentInputModeText = a->getInputModeText();
+                SDL_RenderDebugText(window->getRenderer(), 100, 15, fmt::format("CURRENT INPUTMODE : {}", currentInputModeText).c_str());
             }
         }
 

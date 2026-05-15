@@ -52,3 +52,17 @@ void DrawObjects::handleEvents(Window* window, SDL_Event& event, std::vector<std
         this->setCanCollide(true);
     }
 }
+
+std::string DrawObjects::getInputModeText() const {
+    switch (currentMode) {
+        case InputMode::SHOOT : {
+            return "SHOOT";
+            break;
+        }
+
+        case InputMode::DRAW : {
+            return "DRAW";
+            break;
+        }
+    }
+}

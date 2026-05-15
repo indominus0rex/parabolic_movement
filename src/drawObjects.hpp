@@ -5,6 +5,7 @@
 #include <variant>
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "window.hpp"
 #include "object.hpp"
@@ -50,5 +51,6 @@ public:
     void draw(SDL_Renderer* renderer) override;
     void handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) override;
 
+    std::string getInputModeText() const;
     InputMode getInputMode() const { return currentMode; }
 };
