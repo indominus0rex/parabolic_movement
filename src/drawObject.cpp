@@ -3,13 +3,13 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-#include "drawObjects.hpp"
+#include "drawObject.hpp"
 #include "window.hpp"
 #include "object.hpp"
 
-DrawObjects::DrawObjects() : Object() {}
+DrawObject::DrawObject(InteractableType interactableType) : Object(), Interaction(interactableType) {}
 
-void DrawObjects::draw(SDL_Renderer* renderer) {
+void DrawObject::draw(SDL_Renderer* renderer) {
     std::visit(Overload{
         [&](DrawObjectRectData& rect) {
             SDL_FRect newRect = rect.getRect();
@@ -21,7 +21,7 @@ void DrawObjects::draw(SDL_Renderer* renderer) {
     }, drawData);
 }  
 
-void DrawObjects::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
+void DrawObject::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && currentMode == InputMode::DRAW) {
         mouseDown = true;
         std::visit(Overload{
@@ -53,7 +53,7 @@ void DrawObjects::handleEvents(Window* window, SDL_Event& event, std::vector<std
     }
 }
 
-std::string DrawObjects::getInputModeText() const {
+std::string DrawObject::getInputModeText() const {
     switch (currentMode) {
         case InputMode::SHOOT : {
             return "SHOOT";
@@ -65,4 +65,6 @@ std::string DrawObjects::getInputModeText() const {
             break;
         }
     }
+
+    return "";
 }

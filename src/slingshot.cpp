@@ -9,7 +9,7 @@
 #include "window.hpp"
 #include "physicsConfig.hpp"
 
-Slingshot::Slingshot() : mouseDown(false) {}
+Slingshot::Slingshot(InteractableType interactableType) : mouseDown(false), Interaction(interactableType) {}
 
 void Slingshot::draw(SDL_Renderer* renderer) {
     if (!mouseDown || startPosition == defaultMousePosition || endPosition == defaultMousePosition)

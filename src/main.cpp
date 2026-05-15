@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "drawObjects.hpp"
+#include "drawObject.hpp"
 #include "button.hpp"
 #include "slingshot.hpp"
 #include "interaction.hpp"
@@ -25,13 +25,13 @@ int main(int argc, char* argv[]) {
     std::vector<std::unique_ptr<Interaction>> mechanics;
 
     //add slingshot
-    mechanics.push_back(std::make_unique<Slingshot>());
+    mechanics.push_back(std::make_unique<Slingshot>(InteractableType::SLINGSHOT));
 
     //add drawobject
-    mechanics.push_back(std::make_unique<DrawObjects>());
+    mechanics.push_back(std::make_unique<DrawObject>(InteractableType::DRAWOBJECT));
 
     //add inputmode button
-    interactables.push_back(std::make_unique<Button>(glm::vec2(50, 20), glm::vec2(50, 20), SDL_Color{150, 150, 150, 255}, []() {
+    interactables.push_back(std::make_unique<Button>(glm::vec2(50, 20), glm::vec2(50, 20), SDL_Color{150, 150, 150, 255}, InteractableType::BUTTON, []() {
         std::cout << "hello world\n";
     }));
 
@@ -129,10 +129,10 @@ int main(int argc, char* argv[]) {
         for (auto& mechanic : mechanics) {
             mechanic->draw(window->getRenderer());
 
-            //TODO fix this
-            if (auto* a = dynamic_cast<DrawObjects*>(mechanic.get())) {
-                std::string currentInputModeText = a->getInputModeText();
-                SDL_RenderDebugText(window->getRenderer(), 100, 15, fmt::format("CURRENT INPUTMODE : {}", currentInputModeText).c_str());
+            if (mechanic->getType() == InteractableType::DRAWOBJECT) {
+                auto* drawObject = static_cast<DrawObject*>(mechanic.get());
+
+                SDL_RenderDebugText(window->getRenderer(), 100, 15, fmt::format("CURRENT INPUTMODE : {}", drawObject->getInputModeText()).c_str());
             }
         }
 

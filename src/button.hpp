@@ -16,12 +16,12 @@ public:
 
     std::function<void()> onClick;
 
-    Button(glm::vec2 position, glm::vec2 size, SDL_Color color, std::function<void()> callback);
+    Button(glm::vec2 position, glm::vec2 size, SDL_Color color, InteractableType interactableType, std::function<void()> callback);
 
     ~Button();
 
     void draw(SDL_Renderer* renderer) override;
     void handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) override;
 
-    
+
 };

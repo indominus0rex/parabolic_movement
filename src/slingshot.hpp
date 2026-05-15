@@ -21,7 +21,7 @@ protected:
 
 public:
 
-    Slingshot();
+    Slingshot(InteractableType interactableType);
 
     void draw(SDL_Renderer* renderer);
     void handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects);

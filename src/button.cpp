@@ -9,8 +9,8 @@
 #include "particle.hpp"
 #include "window.hpp"
 
-Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color, std::function<void()> callback) : 
-    Object(position, size, color, false), onClick(callback) {
+Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color, InteractableType interactableType, std::function<void()> callback) : 
+    Object(position, size, color, false), onClick(callback), Interaction(interactableType) {
         this->hoverColor = {
             Uint8(color.r + 20),
             Uint8(color.g + 20),

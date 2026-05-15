@@ -7,7 +7,7 @@ add_executable(${PROJECT_NAME}
   slingshot.cpp
   interaction.cpp
   collisionManager.cpp
-  drawObjects.cpp
+  drawObject.cpp
 )
 
 include (FetchContent)

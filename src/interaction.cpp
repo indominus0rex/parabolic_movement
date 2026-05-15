@@ -3,6 +3,8 @@
 
 #include "interaction.hpp"
 
+Interaction::Interaction(InteractableType interactableType) : currentInteractableType(interactableType) {}
+
 glm::vec2 Interaction::getMousePosition(Window* window, SDL_Event& event) { 
     glm::vec2 mousePosition;
     SDL_RenderCoordinatesFromWindow(window->getRenderer(), event.motion.x, event.motion.y, &mousePosition.x, &mousePosition.y);
