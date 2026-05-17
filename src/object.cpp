@@ -1,16 +1,9 @@
 #include "object.hpp"
+#include "config.hpp"
 
-Object::Object(glm::vec2 position, glm::vec2 size, SDL_Color color, bool canCollide) : 
-    canCollide(canCollide), 
-    color(color),
-    shapeData(RectData{position, size})
-{}
+Object::Object(const ObjectConfig& objectConfig) {
     
-Object::Object(glm::vec2 center, float radius, SDL_Color color, bool canCollide) :
-    canCollide(canCollide),
-    color(color),
-    shapeData(CircleData{center, radius})
-{}
+}
 
 SDL_FRect Object::getBoundingBox() const {
     return std::visit([](auto&& arg) -> SDL_FRect {

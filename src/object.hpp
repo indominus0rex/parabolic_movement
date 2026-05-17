@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "window.hpp"
+#include "config.hpp"
 
 enum ObjectType {
     PARTICLE
@@ -39,8 +40,7 @@ public:
     auto applyVisitor(T&& visitor) const { return std::visit(std::forward<T>(visitor), shapeData); }
 
     Object() {}
-    Object(glm::vec2 position, glm::vec2 size, SDL_Color color, bool canCollide);
-    Object(glm::vec2 center, float radius, SDL_Color color, bool canCollide);
+    Object(const ObjectConfig& objectConfig);
 
     virtual ~Object() = default;
 
