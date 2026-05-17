@@ -31,9 +31,15 @@ int main(int argc, char* argv[]) {
     mechanics.push_back(std::make_unique<DrawObject>(InteractableType::DRAWOBJECT));
 
     //add inputmode button
-    interactables.push_back(std::make_unique<Button>(glm::vec2(50, 20), glm::vec2(50, 20), SDL_Color{150, 150, 150, 255}, InteractableType::BUTTON, []() {
-        std::cout << "hello world\n";
-    }));
+    ButtonConfig inputModeButtonConfig;
+    inputModeButtonConfig.position = glm::vec2(50, 20);
+    inputModeButtonConfig.size = glm::vec2(50, 20);
+    inputModeButtonConfig.color = SDL_Color{150, 150, 150, 255};
+    inputModeButtonConfig.interactabletype = InteractableType::BUTTON;
+    inputModeButtonConfig.onClick = []() {
+        std::cout << "Hello World\n";
+    };
+    interactables.push_back(std::make_unique<Button>(inputModeButtonConfig));
 
     bool mouseOverInteractables = false;
     bool running = true;

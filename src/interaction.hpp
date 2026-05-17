@@ -9,21 +9,7 @@
 
 #include "window.hpp"
 #include "object.hpp"
-
-enum InteractableType {
-    BUTTON,
-    SLINGSHOT,
-    DRAWOBJECT
-};
-
-struct ButtonConfig {
-    glm::vec2 position;
-    glm::vec2 size;
-    SDL_Color color;
-    InteractableType interactableType;
-    std::function<void()> onClick;
-    std::string buttonText;
-};
+#include "config.hpp"
 
 class Interaction {
 protected:

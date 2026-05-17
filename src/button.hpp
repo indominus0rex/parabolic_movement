@@ -5,18 +5,17 @@
 
 #include "object.hpp"
 #include "interaction.hpp"
+#include "config.hpp"
 
 class Button : public Interaction, Object {
 protected:
     
     SDL_Color hoverColor;
+    std::function<void()> onClick;
 
 public:
 
-
-    std::function<void()> onClick;
-
-    Button(glm::vec2 position, glm::vec2 size, SDL_Color color, InteractableType interactableType, std::function<void()> callback);
+    Button(const ButtonConfig& buttonConfig);
 
     ~Button();
 

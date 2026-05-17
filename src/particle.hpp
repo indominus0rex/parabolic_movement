@@ -9,13 +9,13 @@
 
 #include "window.hpp"
 #include "object.hpp"
+#include "config.hpp"
 
 class Particle : public Object {
 private:
     
     glm::vec2 velocity;
     float mass;
-    bool stuck;
 
     void calcNewVelocity(Particle* other);
     void handleAABBCollision(Window* window, Particle* other);
@@ -24,8 +24,7 @@ private:
 
 public:
     
-    Particle(glm::vec2 position, glm::vec2 size, glm::vec2 velocity, float mass, SDL_Color color);
-    Particle(glm::vec2 center, float radius, glm::vec2 velocity, float mass, SDL_Color color);
+    Particle(const ParticleConfig& particleConfig);
 
     ~Particle();
 
@@ -38,7 +37,6 @@ public:
     float getMomentum() const { return mass * glm::length(velocity); }
     float getMass() const { return mass; }
     float getRadius() const;
-    bool isStuck() const { return stuck; }
     
     //setters
     void setMass(float mass) { this->mass = mass; }
@@ -67,16 +65,19 @@ public:
             objects.push_back(std::make_unique<Particle>(particle));
         }
         else if constexpr (std::is_same_v<T, CircleData>) {
-            float mass = 1;
-            
-            float radius = 5;
-        
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_int_distribution<Uint8> distr(0, 255);
             SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
-        
-            Particle particle(launchPosition, radius, launchVelocity, mass, color);
+            
+            ParticleConfig particleConfig;
+            particleConfig.center = launchPosition;
+            particleConfig.radius = 5;
+            particleConfig.velocity = launchVelocity;
+            particleConfig.mass = 1;
+            particleConfig.color = color;
+
+            Particle particle(particleConfig);
             objects.push_back(std::make_unique<Particle>(particle));
         }
     }

@@ -9,20 +9,6 @@
 #include "window.hpp"
 #include "config.hpp"
 
-enum ObjectType {
-    PARTICLE
-};
-
-struct RectData {
-    glm::vec2 position;
-    glm::vec2 size;
-};
-
-struct CircleData {
-    glm::vec2 center;
-    float radius;
-};
-
 
 class Object {
     protected:

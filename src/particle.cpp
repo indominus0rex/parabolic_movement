@@ -7,32 +7,13 @@
 #include "window.hpp"
 #include "object.hpp"
 #include "physicsConfig.hpp"
+#include "config.hpp"
 
-Particle::Particle(
-    glm::vec2 position, 
-    glm::vec2 size, 
-    glm::vec2 velocity, 
-    float mass, 
-    SDL_Color color
-) : 
-    Object(position, size, color, true), 
-    velocity(velocity), 
-    mass(mass),
-    stuck(false)
-{}
+Particle::Particle(const ParticleConfig& particleConfig) : Object(particleConfig) {
+    this->mass = particleConfig.mass;
+    this->velocity = particleConfig.velocity;
+}
 
-Particle::Particle(
-    glm::vec2 center,
-    float radius,
-    glm::vec2 velocity,
-    float mass,
-    SDL_Color color
-) :
-    Object(center, radius, color, true),
-    velocity(velocity),
-    mass(mass),
-    stuck(false)
-{}
 
 Particle::~Particle() {}
 

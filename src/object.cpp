@@ -2,7 +2,22 @@
 #include "config.hpp"
 
 Object::Object(const ObjectConfig& objectConfig) {
-    
+    this->canCollide = objectConfig.canCollide;
+    this->color = objectConfig.color;
+    this->objectType = objectConfig.objectType;
+    this->shapeData = objectConfig.shapeData;
+
+    std::visit(Overload{
+        [&](RectData& rect) {
+            rect.position = objectConfig.position;
+            rect.size = objectConfig.size;
+        },
+        [&](CircleData& circle) {
+            circle.center = objectConfig.center;
+            circle.radius = objectConfig.radius;
+        }
+    }, this->shapeData);
+
 }
 
 SDL_FRect Object::getBoundingBox() const {

@@ -8,16 +8,18 @@
 #include "object.hpp"
 #include "particle.hpp"
 #include "window.hpp"
+#include "config.hpp"
 
-Button::Button(glm::vec2 position, glm::vec2 size, SDL_Color color, InteractableType interactableType, std::function<void()> callback) : 
-    Object(position, size, color, false), onClick(callback), Interaction(interactableType) {
-        this->hoverColor = {
-            Uint8(color.r + 20),
-            Uint8(color.g + 20),
-            Uint8(color.b + 20),
-            Uint8(color.a)
-        };
-    }
+Button::Button(const ButtonConfig& buttonConfig) : Object(buttonConfig), Interaction(buttonConfig.interactabletype) {
+    this->hoverColor = {
+        Uint8(color.r + 20),
+        Uint8(color.g + 20),
+        Uint8(color.b + 20),
+        Uint8(color.a)
+    };
+
+    this->onClick = buttonConfig.onClick;
+}   
 
 Button::~Button() {}
 
@@ -45,7 +47,9 @@ void Button::draw(SDL_Renderer* renderer) {
 void Button::handleEvents(Window* window, SDL_Event& event, std::vector<std::unique_ptr<Object>>& objects) {
     if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         if (this->isHovered) {
-            this->onClick();
+            if (this->onClick) {
+                this->onClick();
+            }
         }
     }
 
