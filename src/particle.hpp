@@ -50,32 +50,25 @@ public:
         glm::vec2 launchPosition
     ) {
         if constexpr (std::is_same_v<T, RectData>) {
-            float mass = 1;
-            float sizeX = 10;
-            float sizeY = 10;
-        
-            glm::vec2 newSize = glm::vec2(sizeX, sizeY);
-        
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<Uint8> distr(0, 255);
-            SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
-        
-            Particle particle(launchPosition, newSize, launchVelocity, mass, color);
+            ParticleConfig particleConfig;
+            particleConfig.position = launchPosition;
+            particleConfig.size = { 10, 10 };
+            particleConfig.velocity = launchVelocity;
+            particleConfig.mass = 1;
+            particleConfig.color = { 255, 255, 255, 255 };
+            particleConfig.shapeData = RectData{};
+
+            Particle particle(particleConfig);
             objects.push_back(std::make_unique<Particle>(particle));
         }
         else if constexpr (std::is_same_v<T, CircleData>) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<Uint8> distr(0, 255);
-            SDL_Color color = {distr(gen), distr(gen), distr(gen), distr(gen)};
-            
             ParticleConfig particleConfig;
             particleConfig.center = launchPosition;
             particleConfig.radius = 5;
             particleConfig.velocity = launchVelocity;
             particleConfig.mass = 1;
-            particleConfig.color = color;
+            particleConfig.color = { 255, 255, 255, 255 };
+            particleConfig.shapeData = CircleData{};
 
             Particle particle(particleConfig);
             objects.push_back(std::make_unique<Particle>(particle));

@@ -106,7 +106,7 @@ void Particle::update(Window* window, float deltaTime) {
     this->velocity += PhysicsConfig::gravity * deltaTime;
     glm::vec2 positionChanged = velocity * deltaTime;
     this->updatePosition(positionChanged);
-
+    
     std::visit(Overload{
         [&](const RectData& rect) {
             SDL_FRect boundingBox = this->getBoundingBox();
@@ -144,6 +144,7 @@ void Particle::update(Window* window, float deltaTime) {
             }
         },
         [&](const CircleData& circle) {
+
             //left wall
             if (circle.center.x - circle.radius < 0) {
                 this->setCenter({ circle.radius, circle.center.y });
@@ -180,9 +181,6 @@ void Particle::update(Window* window, float deltaTime) {
 }
 
 void Particle::drawCircle(SDL_Renderer* renderer) {
-    if (!this->isCircle())
-        return;
-
     int x = (int) this->getRadius();
     int y = 0;
     int error = 1 - x;

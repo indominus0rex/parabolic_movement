@@ -17,22 +17,22 @@ enum InteractableType {
 };
 
 struct RectData {
-    glm::vec2 position;
-    glm::vec2 size;
+    glm::vec2 position = { 0.0f, 0.0f };
+    glm::vec2 size = { 0.0f, 0.0f };
 };
 
 struct CircleData  {
-    glm::vec2 center;
-    float radius;
+    glm::vec2 center = { 0.0f, 0.0f };
+    float radius = 0;
 };
 
 struct ObjectConfig {   
-    glm::vec2 position;
-    glm::vec2 size;
-    glm::vec2 center;
-    float radius;
-    SDL_Color color;
-    bool canCollide;
+    glm::vec2 position = { 0.0f, 0.0f };
+    glm::vec2 size = { 0.0f, 0.0f };
+    glm::vec2 center = { 0.0f, 0.0f };
+    float radius = 0;
+    SDL_Color color = { 255, 255, 255, 255 };
+    bool canCollide = false;
     std::variant<RectData, CircleData> shapeData;
     ObjectType objectType;
 };
